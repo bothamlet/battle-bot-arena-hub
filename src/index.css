@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,19 +36,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -96,6 +90,32 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-battlebot-dark-blue-black text-battlebot-light-text;
+  }
+}
+
+@layer components {
+  .battle-nav-link {
+    @apply relative px-4 py-2 text-battlebot-light-text hover:text-battlebot-golden-yellow transition-colors duration-300;
+  }
+  
+  .battle-nav-link::after {
+    @apply content-[''] absolute bottom-0 left-0 w-0 h-[2px] bg-battlebot-bright-yellow transition-all duration-300;
+  }
+  
+  .battle-nav-link:hover::after {
+    @apply w-full;
+  }
+  
+  .battle-button {
+    @apply bg-battlebot-golden-yellow text-battlebot-dark-text font-bold py-2 px-6 rounded-md 
+    hover:bg-battlebot-bright-yellow transition-all duration-300 shadow-md hover:shadow-lg
+    hover:shadow-battlebot-bright-yellow/20 border-2 border-transparent hover:border-battlebot-bright-yellow;
+  }
+  
+  .battle-card {
+    @apply bg-battlebot-deep-navy-blue rounded-lg overflow-hidden shadow-lg 
+    border border-battlebot-rich-blue/50 hover:shadow-battlebot-bright-yellow/20 
+    transition-all duration-300;
   }
 }
