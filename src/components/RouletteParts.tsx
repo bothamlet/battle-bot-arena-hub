@@ -12,12 +12,12 @@ type RoulettePart = {
 };
 
 const rouletteParts: RoulettePart[] = [
-  { name: "Motor", icon: <Zap className="h-8 w-8" />, rarity: "common", color: "bg-gray-300" },
-  { name: "CPU", icon: <Cpu className="h-8 w-8" />, rarity: "uncommon", color: "bg-green-300" },
-  { name: "Gear", icon: <Cog className="h-8 w-8" />, rarity: "common", color: "bg-gray-300" },
-  { name: "Weapon", icon: <Wrench className="h-8 w-8" />, rarity: "rare", color: "bg-blue-300" },
-  { name: "Frame", icon: <Banknote className="h-8 w-8" />, rarity: "uncommon", color: "bg-green-300" },
-  { name: "Trophy Part", icon: <Trophy className="h-8 w-8" />, rarity: "legendary", color: "bg-yellow-300" },
+  { name: "Motor", icon: <Zap className="h-8 w-8" />, rarity: "common", color: "bg-red-500" },
+  { name: "CPU", icon: <Cpu className="h-8 w-8" />, rarity: "uncommon", color: "bg-black" },
+  { name: "Gear", icon: <Cog className="h-8 w-8" />, rarity: "common", color: "bg-red-500" },
+  { name: "Weapon", icon: <Wrench className="h-8 w-8" />, rarity: "rare", color: "bg-black" },
+  { name: "Frame", icon: <Banknote className="h-8 w-8" />, rarity: "uncommon", color: "bg-red-500" },
+  { name: "Trophy Part", icon: <Trophy className="h-8 w-8" />, rarity: "legendary", color: "bg-black" },
 ];
 
 const RouletteParts = ({ onClose }: { onClose: () => void }) => {
@@ -87,7 +87,7 @@ const RouletteParts = ({ onClose }: { onClose: () => void }) => {
       
       <div className="mb-6">
         <div className="relative w-64 h-64 mx-auto">
-          {/* Circular Roulette Wheel */}
+          {/* Roulette Wheel with alternating colors like a casino wheel */}
           <div 
             className="w-full h-full rounded-full border-4 border-battlebot-golden-yellow overflow-hidden"
             style={{ 
@@ -96,6 +96,13 @@ const RouletteParts = ({ onClose }: { onClose: () => void }) => {
               boxShadow: "0 0 15px rgba(255, 214, 10, 0.5)"
             }}
           >
+            {/* Internal darker circle with decorative patterns */}
+            <div className="absolute w-[90%] h-[90%] rounded-full bg-battlebot-rich-blue top-[5%] left-[5%] z-10 flex items-center justify-center">
+              {/* Decorative diamond pattern */}
+              <div className="w-[80%] h-[80%] rounded-full bg-battlebot-deep-navy-blue border-2 border-dashed border-battlebot-golden-yellow"></div>
+            </div>
+            
+            {/* Main roulette segments */}
             {rouletteParts.map((part, index) => {
               const segmentAngle = 360 / rouletteParts.length;
               const rotation = index * segmentAngle;
@@ -109,48 +116,76 @@ const RouletteParts = ({ onClose }: { onClose: () => void }) => {
                     transform: `rotate(${rotation}deg)`,
                   }}
                 >
+                  {/* Number/Icon placement */}
                   <div 
                     className="absolute"
                     style={{ 
                       left: '50%', 
-                      top: '20%',
+                      top: '15%',
                       transform: `translateX(-50%) rotate(${90}deg)` 
                     }}
                   >
-                    {part.icon}
+                    <div className="flex flex-col items-center">
+                      <div className="text-white font-bold text-lg">{index + 1}</div>
+                      <div className="text-battlebot-golden-yellow">{part.icon}</div>
+                    </div>
                   </div>
                 </div>
               );
             })}
+            
+            {/* Small metal-like balls around the rim */}
+            {Array.from({ length: 24 }).map((_, i) => {
+              const angle = (i * 15) * (Math.PI / 180);
+              const left = 50 + 46 * Math.cos(angle);
+              const top = 50 + 46 * Math.sin(angle);
+              
+              return (
+                <div 
+                  key={`ball-${i}`}
+                  className="absolute w-2 h-2 rounded-full bg-white"
+                  style={{
+                    left: `${left}%`,
+                    top: `${top}%`,
+                    boxShadow: '0 0 2px rgba(0,0,0,0.5)',
+                  }}
+                />
+              );
+            })}
           </div>
           
-          {/* Arrow Pointer */}
+          {/* Casino-style spinner/needle */}
           <div 
-            className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1 z-10"
-            style={{ filter: "drop-shadow(0 0 2px rgba(0,0,0,0.5))" }}
+            className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-[20%] z-20"
           >
-            <div className="w-0 h-0 mx-auto border-l-[10px] border-r-[10px] border-t-[20px] border-l-transparent border-r-transparent border-t-battlebot-bright-yellow"></div>
+            <div className="w-6 h-12 flex flex-col items-center">
+              <div className="w-6 h-6 rounded-full bg-white border-2 border-battlebot-golden-yellow shadow-md"></div>
+              <div className="w-0 h-0 border-l-[8px] border-r-[8px] border-t-[16px] border-l-transparent border-r-transparent border-t-battlebot-golden-yellow mt-[-2px]"></div>
+            </div>
           </div>
           
-          {/* Center circle */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-battlebot-rich-blue border-2 border-battlebot-golden-yellow z-10 flex items-center justify-center">
-            <Trophy className="h-6 w-6 text-battlebot-golden-yellow" />
+          {/* Center metallic cap */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-gradient-to-br from-gray-300 to-gray-600 border-4 border-battlebot-golden-yellow z-30 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-battlebot-golden-yellow flex items-center justify-center">
+              <Trophy className="h-5 w-5 text-battlebot-deep-navy-blue" />
+            </div>
           </div>
         </div>
 
         {/* Result Display */}
         {result && !spinning && (
-          <div className="mt-4 p-2 rounded-lg flex items-center justify-center flex-col">
-            <div className={`p-3 rounded-full ${result.color}`}>
+          <div className="mt-6 p-3 bg-battlebot-rich-blue rounded-lg flex items-center justify-center flex-col border-2 border-battlebot-golden-yellow">
+            <div className={`p-3 rounded-full ${result.color === 'bg-black' ? 'bg-gray-900' : result.color}`}>
               {result.icon}
             </div>
             <div className="text-center mt-2">
-              <p className="text-battlebot-golden-yellow font-bold">{result.name}</p>
-              <p className="text-battlebot-light-text text-sm capitalize">{result.rarity}</p>
+              <p className="text-battlebot-golden-yellow font-bold text-xl">{result.name}</p>
+              <p className="text-battlebot-light-text capitalize">{result.rarity}</p>
             </div>
           </div>
         )}
 
+        {/* Controls */}
         <div className="flex justify-center space-x-4 mt-6">
           <Button
             onClick={spinRoulette}
@@ -169,9 +204,10 @@ const RouletteParts = ({ onClose }: { onClose: () => void }) => {
         </div>
       </div>
       
-      <div className="text-sm text-battlebot-light-text">
-        <h3 className="font-bold mb-2">Rarities:</h3>
-        <ul className="space-y-1">
+      {/* Rarity legend */}
+      <div className="text-sm text-battlebot-light-text bg-battlebot-deep-navy-blue p-3 rounded-lg border border-battlebot-rich-blue">
+        <h3 className="font-bold mb-2">Part Rarities:</h3>
+        <ul className="grid grid-cols-2 gap-2">
           <li className="flex items-center"><span className="w-4 h-4 inline-block mr-2 bg-gray-300 rounded-full"></span> Common</li>
           <li className="flex items-center"><span className="w-4 h-4 inline-block mr-2 bg-green-300 rounded-full"></span> Uncommon</li>
           <li className="flex items-center"><span className="w-4 h-4 inline-block mr-2 bg-blue-300 rounded-full"></span> Rare</li>
