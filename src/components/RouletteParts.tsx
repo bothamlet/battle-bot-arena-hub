@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Banknote, Zap, Cpu, Cog, Wrench, Trophy } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 type RoulettePart = {
   name: string;
@@ -22,29 +23,56 @@ const rouletteParts: RoulettePart[] = [
 const RouletteParts = ({ onClose }: { onClose: () => void }) => {
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<RoulettePart | null>(null);
-  const [rouletteItems, setRouletteItems] = useState<RoulettePart[]>([]);
-
-  // Generate random sequence for spinning effect
+  const [rotationDegree, setRotationDegree] = useState(0);
+  const { toast } = useToast();
+  
   useEffect(() => {
     if (!spinning) return;
     
-    // Create a longer random sequence for spinning animation
-    const sequence = Array(20)
-      .fill(null)
-      .map(() => rouletteParts[Math.floor(Math.random() * rouletteParts.length)]);
+    // Generate a random number of full rotations plus the position for the final result
+    const numberOfRotations = 5 + Math.random() * 5; // Between 5-10 full rotations
+    const segmentAngle = 360 / rouletteParts.length;
+    const randomIndex = Math.floor(Math.random() * rouletteParts.length);
+    
+    // Calculate final position: full rotations + position to land on the chosen item
+    // We subtract from 360 because we want the arrow to point at the segment (reverse calculation)
+    const finalPosition = (numberOfRotations * 360) + (360 - (randomIndex * segmentAngle) - (segmentAngle / 2));
+    
+    // Animate rotation
+    let start: number | null = null;
+    const duration = 3000; // 3 seconds spin
+    
+    const animate = (timestamp: number) => {
+      if (!start) start = timestamp;
+      const elapsed = timestamp - start;
+      const progress = Math.min(elapsed / duration, 1);
       
-    setRouletteItems(sequence);
+      // Easing function for slowing down toward the end
+      const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+      const currentRotation = progress < 1 
+        ? progress * finalPosition 
+        : finalPosition;
+      
+      setRotationDegree(easeOut(progress) * finalPosition);
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        // Animation completed
+        setSpinning(false);
+        setResult(rouletteParts[randomIndex]);
+        
+        // Show toast notification
+        toast({
+          title: `You won: ${rouletteParts[randomIndex].name}!`,
+          description: `Rarity: ${rouletteParts[randomIndex].rarity}`,
+          duration: 5000,
+        });
+      }
+    };
     
-    // Set the final result
-    const finalResult = rouletteParts[Math.floor(Math.random() * rouletteParts.length)];
-    
-    const timer = setTimeout(() => {
-      setSpinning(false);
-      setResult(finalResult);
-    }, 3000);
-    
-    return () => clearTimeout(timer);
-  }, [spinning]);
+    requestAnimationFrame(animate);
+  }, [spinning, toast]);
 
   const spinRoulette = () => {
     setSpinning(true);
@@ -58,33 +86,72 @@ const RouletteParts = ({ onClose }: { onClose: () => void }) => {
       </h2>
       
       <div className="mb-6">
-        <div className="relative h-20 overflow-hidden bg-battlebot-rich-blue rounded-lg mb-4 border-2 border-battlebot-golden-yellow">
-          {spinning ? (
-            <div className="absolute inset-0 flex items-center animate-[slide_3s_linear]">
-              {rouletteItems.map((part, index) => (
+        <div className="relative w-64 h-64 mx-auto">
+          {/* Circular Roulette Wheel */}
+          <div 
+            className="w-full h-full rounded-full border-4 border-battlebot-golden-yellow overflow-hidden"
+            style={{ 
+              transform: `rotate(${rotationDegree}deg)`, 
+              transition: spinning ? "none" : "transform 0.5s ease-out",
+              boxShadow: "0 0 15px rgba(255, 214, 10, 0.5)"
+            }}
+          >
+            {rouletteParts.map((part, index) => {
+              const segmentAngle = 360 / rouletteParts.length;
+              const rotation = index * segmentAngle;
+              
+              return (
                 <div 
-                  key={index} 
-                  className={`flex-shrink-0 w-20 h-20 flex flex-col items-center justify-center ${part.color} border-r border-gray-700`}
+                  key={index}
+                  className={`absolute w-full h-full ${part.color}`}
+                  style={{
+                    clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.cos((rotation + segmentAngle) * Math.PI / 180)}% ${50 + 50 * Math.sin((rotation + segmentAngle) * Math.PI / 180)}%, 50% 50%)`,
+                    transform: `rotate(${rotation}deg)`,
+                  }}
                 >
-                  {part.icon}
-                  <span className="text-xs text-battlebot-dark-text font-semibold mt-1">{part.name}</span>
+                  <div 
+                    className="absolute"
+                    style={{ 
+                      left: '50%', 
+                      top: '20%',
+                      transform: `translateX(-50%) rotate(${90}deg)` 
+                    }}
+                  >
+                    {part.icon}
+                  </div>
                 </div>
-              ))}
-            </div>
-          ) : result ? (
-            <div className={`w-full h-full flex flex-col items-center justify-center ${result.color}`}>
-              {result.icon}
-              <span className="text-sm text-battlebot-dark-text font-bold mt-1">{result.name}</span>
-              <span className="text-xs text-battlebot-dark-text">{result.rarity}</span>
-            </div>
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <span className="text-battlebot-light-text">Spin to win parts!</span>
-            </div>
-          )}
+              );
+            })}
+          </div>
+          
+          {/* Arrow Pointer */}
+          <div 
+            className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1 z-10"
+            style={{ filter: "drop-shadow(0 0 2px rgba(0,0,0,0.5))" }}
+          >
+            <div className="w-0 h-0 mx-auto border-l-[10px] border-r-[10px] border-t-[20px] border-l-transparent border-r-transparent border-t-battlebot-bright-yellow"></div>
+          </div>
+          
+          {/* Center circle */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-battlebot-rich-blue border-2 border-battlebot-golden-yellow z-10 flex items-center justify-center">
+            <Trophy className="h-6 w-6 text-battlebot-golden-yellow" />
+          </div>
         </div>
 
-        <div className="flex justify-center space-x-4">
+        {/* Result Display */}
+        {result && !spinning && (
+          <div className="mt-4 p-2 rounded-lg flex items-center justify-center flex-col">
+            <div className={`p-3 rounded-full ${result.color}`}>
+              {result.icon}
+            </div>
+            <div className="text-center mt-2">
+              <p className="text-battlebot-golden-yellow font-bold">{result.name}</p>
+              <p className="text-battlebot-light-text text-sm capitalize">{result.rarity}</p>
+            </div>
+          </div>
+        )}
+
+        <div className="flex justify-center space-x-4 mt-6">
           <Button
             onClick={spinRoulette}
             disabled={spinning}
