@@ -105,6 +105,10 @@ export default {
 				'slide-in-left': {
 					'0%': { transform: 'translateX(-100%)' },
 					'100%': { transform: 'translateX(0)' }
+				},
+				'slide': {
+					'0%': { transform: 'translateX(0)' },
+					'100%': { transform: 'translateX(calc(-20px * 20))' }
 				}
 			},
 			animation: {

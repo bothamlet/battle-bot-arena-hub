@@ -1,7 +1,8 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Trophy, Users, Star } from "lucide-react";
+import { Trophy, Users, Star, DollarSign } from "lucide-react";
+import GambleDialog from "./GambleDialog";
 
 const Header: React.FC = () => {
   return (
@@ -24,8 +25,14 @@ const Header: React.FC = () => {
             <Link to="/events" className="battle-nav-link">
               Events
             </Link>
-            <Link to="/gamble" className="battle-nav-link">
-              Gamble
+            <div className="battle-nav-link">
+              <GambleDialog />
+            </div>
+            <Link to="/betting" className="battle-nav-link">
+              <div className="flex items-center">
+                <DollarSign size={18} className="mr-1" />
+                Betting
+              </div>
             </Link>
             <Link to="/teams" className="battle-nav-link">
               Teams
