@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Calendar, Clock, MapPin, Users, Shield, Trophy, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -173,7 +172,11 @@ const Event: React.FC<EventProps> = ({ date, title, location, time, featured = f
   );
 };
 
-const EventSchedule: React.FC = () => {
+interface EventScheduleProps {
+  fullPage?: boolean;
+}
+
+const EventSchedule: React.FC<EventScheduleProps> = ({ fullPage = false }) => {
   return (
     <section className="py-16 bg-battlebot-dark-blue-black/95 bg-[url(https://images.unsplash.com/photo-1563203369-26f2e4a5ccf7?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80)] bg-fixed bg-blend-overlay">
       <div className="container mx-auto px-4">
@@ -246,13 +249,15 @@ const EventSchedule: React.FC = () => {
             />
           </div>
           
-          <div className="mt-8 text-center">
-            <Link to="/events">
-              <button className="battle-button">
-                View Full Calendar
-              </button>
-            </Link>
-          </div>
+          {!fullPage && (
+            <div className="mt-8 text-center">
+              <Link to="/events">
+                <button className="battle-button">
+                  View Full Calendar
+                </button>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </section>

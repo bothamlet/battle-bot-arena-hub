@@ -20,7 +20,7 @@ const Events: React.FC = () => {
             </p>
           </div>
           
-          <EventSchedule fullPage={true} />
+          <EventSchedule />
         </div>
       </main>
       <Footer />
