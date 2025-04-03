@@ -1,6 +1,8 @@
-import React from "react";
-import { Trophy, Star, Award } from "lucide-react";
+
+import React, { useState } from "react";
+import { Trophy, Star, Award, Users, Medal } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Fighter {
   id: number;
@@ -10,6 +12,15 @@ interface Fighter {
   wins: number;
   knockouts: number;
   imageUrl: string;
+}
+
+interface Team {
+  id: number;
+  name: string;
+  wins: number;
+  losses: number;
+  points: number;
+  logo: string;
 }
 
 const topFighters: Fighter[] = [
@@ -60,6 +71,49 @@ const topFighters: Fighter[] = [
   }
 ];
 
+const topTeams: Team[] = [
+  {
+    id: 1,
+    name: "Crusher Kings",
+    wins: 12,
+    losses: 2,
+    points: 245,
+    logo: "https://images.unsplash.com/photo-1535378620166-273708d44e4c?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80"
+  },
+  {
+    id: 2,
+    name: "Metal Mayhem",
+    wins: 11,
+    losses: 3,
+    points: 230,
+    logo: "https://images.unsplash.com/photo-1555255707-c07966088b7b?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80"
+  },
+  {
+    id: 3,
+    name: "Robo Wreckers",
+    wins: 10,
+    losses: 4,
+    points: 210,
+    logo: "https://images.unsplash.com/photo-1531279550271-23c2a77a765c?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80"
+  },
+  {
+    id: 4,
+    name: "Circuit Breakers",
+    wins: 9,
+    losses: 5,
+    points: 195,
+    logo: "https://images.unsplash.com/photo-1548191194-b3d4f051fd7d?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80"
+  },
+  {
+    id: 5,
+    name: "Steel Titans",
+    wins: 8,
+    losses: 6,
+    points: 180,
+    logo: "https://images.unsplash.com/photo-1531347424667-726947bdf9c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80"
+  }
+];
+
 const TopFighterRow: React.FC<{ fighter: Fighter; rank: number }> = ({ fighter, rank }) => {
   return (
     <div className="flex items-center bg-battlebot-deep-navy-blue hover:bg-battlebot-rich-blue/30 transition-colors p-3 rounded-lg">
@@ -76,17 +130,17 @@ const TopFighterRow: React.FC<{ fighter: Fighter; rank: number }> = ({ fighter, 
       </div>
       
       <div className="ml-3 flex-shrink-0">
-        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-battlebot-golden-yellow">
+        <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-battlebot-golden-yellow">
           <img src={fighter.imageUrl} alt={fighter.name} className="w-full h-full object-cover" />
         </div>
       </div>
       
       <div className="ml-3 flex-grow">
-        <div className="text-battlebot-light-text font-semibold leading-tight">{fighter.name}</div>
+        <div className="text-battlebot-light-text font-semibold text-lg leading-tight">{fighter.name}</div>
         <div className="flex items-center">
-          <span className="text-battlebot-golden-yellow text-xs">{fighter.robotName}</span>
+          <span className="text-battlebot-golden-yellow text-base">{fighter.robotName}</span>
           <span className="text-battlebot-light-text/50 text-xs mx-1">•</span>
-          <span className="text-battlebot-light-text/70 text-xs">{fighter.teamName}</span>
+          <span className="text-battlebot-light-text/70 text-sm">{fighter.teamName}</span>
         </div>
       </div>
       
@@ -104,14 +158,58 @@ const TopFighterRow: React.FC<{ fighter: Fighter; rank: number }> = ({ fighter, 
   );
 };
 
+const TopTeamRow: React.FC<{ team: Team; rank: number }> = ({ team, rank }) => {
+  return (
+    <div className="flex items-center bg-battlebot-deep-navy-blue hover:bg-battlebot-rich-blue/30 transition-colors p-3 rounded-lg">
+      <div className="w-8 text-center flex-shrink-0">
+        {rank === 1 ? (
+          <Trophy className="h-5 w-5 text-battlebot-golden-yellow mx-auto" />
+        ) : rank === 2 ? (
+          <Trophy className="h-5 w-5 text-battlebot-light-text/80 mx-auto" />
+        ) : rank === 3 ? (
+          <Trophy className="h-5 w-5 text-amber-600 mx-auto" />
+        ) : (
+          <span className="text-battlebot-light-text/70 font-semibold">{rank}</span>
+        )}
+      </div>
+      
+      <div className="ml-3 flex-shrink-0">
+        <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-battlebot-golden-yellow">
+          <img src={team.logo} alt={team.name} className="w-full h-full object-cover" />
+        </div>
+      </div>
+      
+      <div className="ml-3 flex-grow">
+        <div className="text-battlebot-light-text font-semibold text-lg leading-tight">{team.name}</div>
+        <div className="flex items-center">
+          <span className="text-battlebot-golden-yellow text-base">{team.points} Points</span>
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-3">
+        <div className="text-center">
+          <div className="text-battlebot-light-text font-bold">{team.wins}</div>
+          <div className="text-battlebot-light-text/60 text-xs">WINS</div>
+        </div>
+        <div className="text-center">
+          <div className="text-battlebot-light-text/80 font-bold">{team.losses}</div>
+          <div className="text-battlebot-light-text/60 text-xs">LOSSES</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const TopFightersLeaderboard: React.FC = () => {
+  const [activeTab, setActiveTab] = useState("fighters");
+  
   return (
     <section className="py-12 bg-battlebot-rich-blue">
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold mb-2 text-battlebot-light-text flex items-center justify-center">
             <Star className="text-battlebot-golden-yellow mr-3" />
-            Top Fighters Leaderboard
+            BattleBots Leaderboard
           </h2>
           <div className="w-24 h-1 bg-battlebot-bright-yellow mx-auto"></div>
           <p className="text-battlebot-light-text/80 mt-4 max-w-2xl mx-auto">
@@ -127,20 +225,52 @@ const TopFightersLeaderboard: React.FC = () => {
             
             <div className="battle-card">
               <div className="p-6">
-                <div className="space-y-3">
-                  {topFighters.map((fighter, index) => (
-                    <TopFighterRow key={fighter.id} fighter={fighter} rank={index + 1} />
-                  ))}
-                </div>
-                
-                <div className="mt-6 text-center">
-                  <Link 
-                    to="/teams" 
-                    className="battle-button"
-                  >
-                    View Full Rankings
-                  </Link>
-                </div>
+                <Tabs defaultValue="fighters" className="w-full" onValueChange={setActiveTab}>
+                  <TabsList className="grid w-full grid-cols-2 mb-6">
+                    <TabsTrigger value="fighters" className="data-[state=active]:bg-battlebot-golden-yellow data-[state=active]:text-battlebot-dark-text">
+                      <Medal className="mr-2 h-4 w-4" />
+                      Top Fighters
+                    </TabsTrigger>
+                    <TabsTrigger value="teams" className="data-[state=active]:bg-battlebot-golden-yellow data-[state=active]:text-battlebot-dark-text">
+                      <Users className="mr-2 h-4 w-4" />
+                      Team Standings
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="fighters" className="mt-0">
+                    <div className="space-y-3">
+                      {topFighters.map((fighter, index) => (
+                        <TopFighterRow key={fighter.id} fighter={fighter} rank={index + 1} />
+                      ))}
+                    </div>
+                    
+                    <div className="mt-6 text-center">
+                      <Link 
+                        to="/teams" 
+                        className="battle-button"
+                      >
+                        View All Fighters
+                      </Link>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="teams" className="mt-0">
+                    <div className="space-y-3">
+                      {topTeams.map((team, index) => (
+                        <TopTeamRow key={team.id} team={team} rank={index + 1} />
+                      ))}
+                    </div>
+                    
+                    <div className="mt-6 text-center">
+                      <Link 
+                        to="/teams" 
+                        className="battle-button"
+                      >
+                        View Full Rankings
+                      </Link>
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </div>
             </div>
           </div>

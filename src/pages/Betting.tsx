@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Trophy, DollarSign, Flag, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import RouletteParts from "../components/RouletteParts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Link } from "react-router-dom";
+import RoulettePartsNew from "../components/RoulettePartsNew";
 
 type Match = {
   id: number;
@@ -141,14 +142,14 @@ const Betting = () => {
                               <TableCell className="text-battlebot-light-text font-medium">
                                 <div className="flex items-center space-x-4">
                                   <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-full overflow-hidden">
+                                    <div className="w-12 h-12 rounded-full overflow-hidden">
                                       <img src={match.team1Image} alt={match.team1} className="w-full h-full object-cover" />
                                     </div>
                                     <span>{match.team1}</span>
                                   </div>
                                   <span className="text-battlebot-light-text/50">vs</span>
                                   <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-full overflow-hidden">
+                                    <div className="w-12 h-12 rounded-full overflow-hidden">
                                       <img src={match.team2Image} alt={match.team2} className="w-full h-full object-cover" />
                                     </div>
                                     <span>{match.team2}</span>
@@ -190,14 +191,14 @@ const Betting = () => {
                     {selectedMatch ? (
                       <div>
                         <div className="mb-6 text-battlebot-light-text">
-                          <div className="flex items-center gap-2 mb-3">
-                            <div className="w-10 h-10 rounded-full overflow-hidden">
+                          <div className="flex items-center gap-4 mb-3">
+                            <div className="w-16 h-16 rounded-full overflow-hidden">
                               <img src={selectedMatch.team1Image} alt={selectedMatch.team1} className="w-full h-full object-cover" />
                             </div>
                             <h3 className="font-semibold text-lg">
                               {selectedMatch.team1} vs {selectedMatch.team2}
                             </h3>
-                            <div className="w-10 h-10 rounded-full overflow-hidden">
+                            <div className="w-16 h-16 rounded-full overflow-hidden">
                               <img src={selectedMatch.team2Image} alt={selectedMatch.team2} className="w-full h-full object-cover" />
                             </div>
                           </div>
@@ -219,7 +220,7 @@ const Betting = () => {
                                 : "border-battlebot-golden-yellow/50 text-battlebot-light-text"}
                               onClick={() => setSelectedTeam("team1")}
                             >
-                              <div className="mr-2 w-6 h-6 rounded-full overflow-hidden">
+                              <div className="mr-2 w-8 h-8 rounded-full overflow-hidden">
                                 <img src={selectedMatch.team1Image} alt={selectedMatch.team1} className="w-full h-full object-cover" />
                               </div>
                               {selectedMatch.team1} ({selectedMatch.team1Coef.toFixed(2)})
@@ -231,7 +232,7 @@ const Betting = () => {
                                 : "border-battlebot-golden-yellow/50 text-battlebot-light-text"}
                               onClick={() => setSelectedTeam("team2")}
                             >
-                              <div className="mr-2 w-6 h-6 rounded-full overflow-hidden">
+                              <div className="mr-2 w-8 h-8 rounded-full overflow-hidden">
                                 <img src={selectedMatch.team2Image} alt={selectedMatch.team2} className="w-full h-full object-cover" />
                               </div>
                               {selectedMatch.team2} ({selectedMatch.team2Coef.toFixed(2)})
@@ -299,8 +300,8 @@ const Betting = () => {
                     ) : (
                       <div className="flex flex-col items-center justify-center py-8 text-battlebot-light-text">
                         <p className="mb-2">Select a match to place your bet</p>
-                        <div className="w-12 h-12 text-battlebot-golden-yellow">
-                          <Trophy size={48} />
+                        <div className="w-16 h-16 text-battlebot-golden-yellow">
+                          <Trophy size={64} />
                         </div>
                       </div>
                     )}
@@ -310,20 +311,25 @@ const Betting = () => {
             </TabsContent>
 
             <TabsContent value="roulette" className="mt-4">
-              <div className="max-w-[850px] mx-auto">
-                <div className="text-center mb-8">
-                  <h2 className="text-3xl font-bold text-battlebot-light-text flex items-center justify-center">
-                    <Zap className="text-battlebot-golden-yellow mr-3" size={32} />
-                    Robot Parts Roulette
-                  </h2>
-                  <p className="text-battlebot-light-text/80 mt-2">
-                    Try your luck and win valuable robot parts for your next battle!
-                  </p>
-                </div>
-                <RouletteParts onClose={() => {}} />
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-battlebot-light-text flex items-center justify-center">
+                  <Zap className="text-battlebot-golden-yellow mr-3" size={32} />
+                  Robot Parts Roulette
+                </h2>
+                <p className="text-battlebot-light-text/80 mt-2 text-xl max-w-2xl mx-auto">
+                  Try your luck on the wheel of fortune to win valuable robot parts for your next battle!
+                </p>
               </div>
+              <RoulettePartsNew />
             </TabsContent>
           </Tabs>
+
+          {/* Add playoff bracket button in the header */}
+          <div className="mt-16 text-center">
+            <Link to="/playoffs" className="battle-button">
+              View Current Playoff Bracket
+            </Link>
+          </div>
         </div>
       </main>
       <Footer />
