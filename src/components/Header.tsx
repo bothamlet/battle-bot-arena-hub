@@ -25,9 +25,6 @@ const Header: React.FC = () => {
             <Link to="/events" className="battle-nav-link">
               Events
             </Link>
-            <div className="battle-nav-link">
-              <GambleDialog />
-            </div>
             <Link to="/betting" className="battle-nav-link">
               <div className="flex items-center">
                 <DollarSign size={18} className="mr-1" />

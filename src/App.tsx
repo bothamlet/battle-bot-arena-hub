@@ -7,6 +7,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Betting from "./pages/Betting";
 import NotFound from "./pages/NotFound";
+import Events from "./pages/Events";
+import Teams from "./pages/Teams";
+import Rules from "./pages/Rules";
+import Register from "./pages/Register";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +23,10 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/betting" element={<Betting />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/teams" element={<Teams />} />
+          <Route path="/rules" element={<Rules />} />
+          <Route path="/register" element={<Register />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -2,10 +2,9 @@
 import React from "react";
 import Header from "../components/Header";
 import HeroSlider from "../components/HeroSlider";
-import NewsBlock from "../components/NewsBlock";
-import RegistrationForm from "../components/RegistrationForm";
 import EventSchedule from "../components/EventSchedule";
 import Footer from "../components/Footer";
+import TopFightersLeaderboard from "../components/TopFightersLeaderboard";
 
 const Index = () => {
   return (
@@ -13,9 +12,8 @@ const Index = () => {
       <Header />
       <main className="flex-grow">
         <HeroSlider />
-        <NewsBlock />
+        <TopFightersLeaderboard />
         <EventSchedule />
-        <RegistrationForm />
       </main>
       <Footer />
     </div>
