@@ -1,7 +1,6 @@
-
 import React from "react";
 import { Trophy, Star, Award } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface Fighter {
   id: number;
@@ -106,8 +105,6 @@ const TopFighterRow: React.FC<{ fighter: Fighter; rank: number }> = ({ fighter, 
 };
 
 const TopFightersLeaderboard: React.FC = () => {
-  const navigate = useNavigate();
-  
   return (
     <section className="py-12 bg-battlebot-rich-blue">
       <div className="container mx-auto px-4">
@@ -137,12 +134,12 @@ const TopFightersLeaderboard: React.FC = () => {
                 </div>
                 
                 <div className="mt-6 text-center">
-                  <button 
+                  <Link 
+                    to="/teams" 
                     className="battle-button"
-                    onClick={() => navigate('/teams')}
                   >
                     View Full Rankings
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
