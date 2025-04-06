@@ -46,7 +46,7 @@ const HeroSlider: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative h-[650px] overflow-hidden">
+    <div className="relative h-[85vh] overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
@@ -60,20 +60,20 @@ const HeroSlider: React.FC = () => {
           }}
         >
           <div className="container mx-auto h-full flex flex-col justify-center items-center text-center px-4">
-            <h2 className="text-battlebot-golden-yellow text-sm md:text-xl font-bold tracking-wider mb-3">
+            <h2 className="text-battlebot-golden-yellow text-xl md:text-2xl font-bold tracking-wider mb-5">
               {slide.subtitle}
             </h2>
-            <h1 className="text-battlebot-light-text text-5xl md:text-7xl font-extrabold mb-6">
+            <h1 className="text-battlebot-light-text text-6xl md:text-8xl font-extrabold mb-8">
               {slide.title}
             </h1>
-            <p className="text-battlebot-light-text text-lg md:text-2xl max-w-2xl mb-10">
+            <p className="text-battlebot-light-text text-xl md:text-3xl max-w-3xl mb-12">
               {slide.description}
             </p>
-            <div className="flex space-x-6">
-              <button className="battle-button text-lg py-3 px-8">
+            <div className="flex space-x-8">
+              <button className="battle-button text-xl py-4 px-10">
                 Buy Tickets
               </button>
-              <button className="bg-transparent border-2 border-battlebot-golden-yellow text-battlebot-golden-yellow font-bold py-3 px-8 text-lg rounded-md hover:bg-battlebot-golden-yellow/10 transition-colors duration-300">
+              <button className="bg-transparent border-2 border-battlebot-golden-yellow text-battlebot-golden-yellow font-bold py-4 px-10 text-xl rounded-md hover:bg-battlebot-golden-yellow/10 transition-colors duration-300">
                 Learn More
               </button>
             </div>
@@ -83,23 +83,23 @@ const HeroSlider: React.FC = () => {
 
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-battlebot-deep-navy-blue/70 hover:bg-battlebot-deep-navy-blue text-battlebot-light-text p-2 rounded-full"
+        className="absolute left-8 top-1/2 transform -translate-y-1/2 bg-battlebot-deep-navy-blue/70 hover:bg-battlebot-deep-navy-blue text-battlebot-light-text p-4 rounded-full"
       >
-        <ArrowLeft size={24} />
+        <ArrowLeft size={32} />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-battlebot-deep-navy-blue/70 hover:bg-battlebot-deep-navy-blue text-battlebot-light-text p-2 rounded-full"
+        className="absolute right-8 top-1/2 transform -translate-y-1/2 bg-battlebot-deep-navy-blue/70 hover:bg-battlebot-deep-navy-blue text-battlebot-light-text p-4 rounded-full"
       >
-        <ArrowRight size={24} />
+        <ArrowRight size={32} />
       </button>
 
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
+      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex space-x-3">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 rounded-full ${
+            className={`w-4 h-4 rounded-full ${
               index === currentSlide ? "bg-battlebot-golden-yellow" : "bg-white/50"
             }`}
           />
