@@ -2,11 +2,12 @@
 import React from "react";
 import { Trophy, Star, Award } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
-interface Fighter {
+interface Robot {
   id: number;
-  name: string;
   robotName: string;
+  ownerName: string;
   teamName: string;
   wins: number;
   knockouts: number;
@@ -22,51 +23,51 @@ interface Team {
   logo: string;
 }
 
-const topFighters: Fighter[] = [
+const topRobots: Robot[] = [
   {
     id: 1,
-    name: "Alex Morgan",
     robotName: "Decimator",
+    ownerName: "Alex Morgan",
     teamName: "Crusher Kings",
     wins: 15,
     knockouts: 12,
-    imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80"
+    imageUrl: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80"
   },
   {
     id: 2,
-    name: "Riley Johnson",
     robotName: "Pulverizer",
+    ownerName: "Riley Johnson",
     teamName: "Crusher Kings",
     wins: 14,
     knockouts: 10,
-    imageUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80"
+    imageUrl: "https://images.unsplash.com/photo-1507646227500-4d389b0012be?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80"
   },
   {
     id: 3,
-    name: "Sam Wilson",
     robotName: "Havoc",
+    ownerName: "Sam Wilson",
     teamName: "Metal Mayhem",
     wins: 13,
     knockouts: 11,
-    imageUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80"
+    imageUrl: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80"
   },
   {
     id: 4,
-    name: "Jamie Lee",
     robotName: "Chaos",
+    ownerName: "Jamie Lee",
     teamName: "Metal Mayhem",
     wins: 12,
     knockouts: 9,
-    imageUrl: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80"
+    imageUrl: "https://images.unsplash.com/photo-1535378620166-273708d44e4c?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80"
   },
   {
     id: 5,
-    name: "Taylor Kim",
     robotName: "Demolisher",
+    ownerName: "Taylor Kim",
     teamName: "Robo Wreckers",
     wins: 11,
     knockouts: 8,
-    imageUrl: "https://images.unsplash.com/photo-1569913486515-b74bf7751574?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80"
+    imageUrl: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80"
   }
 ];
 
@@ -113,7 +114,7 @@ const topTeams: Team[] = [
   }
 ];
 
-const TopFighterRow: React.FC<{ fighter: Fighter; rank: number }> = ({ fighter, rank }) => {
+const TopRobotRow: React.FC<{ robot: Robot; rank: number }> = ({ robot, rank }) => {
   return (
     <div className="flex items-center bg-battlebot-deep-navy-blue hover:bg-battlebot-rich-blue/30 transition-colors p-3 rounded-lg">
       <div className="w-8 text-center flex-shrink-0">
@@ -129,27 +130,26 @@ const TopFighterRow: React.FC<{ fighter: Fighter; rank: number }> = ({ fighter, 
       </div>
       
       <div className="ml-3 flex-shrink-0">
-        <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-battlebot-golden-yellow">
-          <img src={fighter.imageUrl} alt={fighter.name} className="w-full h-full object-cover" />
+        <div className="w-40 h-40 rounded-full overflow-hidden border-2 border-battlebot-golden-yellow">
+          <img src={robot.imageUrl} alt={robot.robotName} className="w-full h-full object-cover" />
         </div>
       </div>
       
-      <div className="ml-3 flex-grow">
-        <div className="text-battlebot-light-text font-semibold text-lg leading-tight">{fighter.name}</div>
-        <div className="flex items-center">
-          <span className="text-battlebot-golden-yellow text-base">{fighter.robotName}</span>
-          <span className="text-battlebot-light-text/50 text-xs mx-1">•</span>
-          <span className="text-battlebot-light-text/70 text-sm">{fighter.teamName}</span>
+      <div className="ml-5 flex-grow">
+        <div className="text-battlebot-golden-yellow font-bold text-2xl leading-tight">{robot.robotName}</div>
+        <div className="flex items-center mt-1">
+          <span className="text-battlebot-light-text/60 text-sm">Built by {robot.teamName}</span>
         </div>
+        <div className="text-battlebot-light-text/40 text-xs mt-1">Operated by {robot.ownerName}</div>
       </div>
       
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-5">
         <div className="text-center">
-          <div className="text-battlebot-light-text font-bold">{fighter.wins}</div>
+          <div className="text-battlebot-light-text font-bold text-xl">{robot.wins}</div>
           <div className="text-battlebot-light-text/60 text-xs">WINS</div>
         </div>
         <div className="text-center">
-          <div className="text-battlebot-bright-yellow font-bold">{fighter.knockouts}</div>
+          <div className="text-battlebot-bright-yellow font-bold text-xl">{robot.knockouts}</div>
           <div className="text-battlebot-light-text/60 text-xs">KOs</div>
         </div>
       </div>
@@ -173,25 +173,25 @@ const TopTeamRow: React.FC<{ team: Team; rank: number }> = ({ team, rank }) => {
       </div>
       
       <div className="ml-3 flex-shrink-0">
-        <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-battlebot-golden-yellow">
+        <div className="w-40 h-40 rounded-full overflow-hidden border-2 border-battlebot-golden-yellow">
           <img src={team.logo} alt={team.name} className="w-full h-full object-cover" />
         </div>
       </div>
       
-      <div className="ml-3 flex-grow">
-        <div className="text-battlebot-light-text font-semibold text-lg leading-tight">{team.name}</div>
-        <div className="flex items-center">
-          <span className="text-battlebot-golden-yellow text-base">{team.points} Points</span>
+      <div className="ml-5 flex-grow">
+        <div className="text-battlebot-light-text font-bold text-2xl leading-tight">{team.name}</div>
+        <div className="flex items-center mt-2">
+          <span className="text-battlebot-golden-yellow text-lg">{team.points} Points</span>
         </div>
       </div>
       
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-5">
         <div className="text-center">
-          <div className="text-battlebot-light-text font-bold">{team.wins}</div>
+          <div className="text-battlebot-light-text font-bold text-xl">{team.wins}</div>
           <div className="text-battlebot-light-text/60 text-xs">WINS</div>
         </div>
         <div className="text-center">
-          <div className="text-battlebot-light-text/80 font-bold">{team.losses}</div>
+          <div className="text-battlebot-light-text/80 font-bold text-xl">{team.losses}</div>
           <div className="text-battlebot-light-text/60 text-xs">LOSSES</div>
         </div>
       </div>
@@ -201,21 +201,21 @@ const TopTeamRow: React.FC<{ team: Team; rank: number }> = ({ team, rank }) => {
 
 const TopFightersLeaderboard: React.FC = () => {
   return (
-    <section className="py-12 bg-battlebot-rich-blue">
+    <section className="py-16 bg-battlebot-rich-blue">
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold mb-2 text-battlebot-light-text flex items-center justify-center">
+          <h2 className="text-4xl font-bold mb-2 text-battlebot-light-text flex items-center justify-center">
             <Star className="text-battlebot-golden-yellow mr-3" />
-            BattleBots Leaderboard
+            BattleBots Arena
           </h2>
           <div className="w-24 h-1 bg-battlebot-bright-yellow mx-auto"></div>
           <p className="text-battlebot-light-text/80 mt-4 max-w-2xl mx-auto">
-            The most fearsome competitors in the Battle Bots arena
+            Where steel warriors clash and only the strongest survive
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {/* Top Fighters Column */}
+        <div className="grid md:grid-cols-2 gap-8 max-w-7xl mx-auto">
+          {/* Top Robots Column */}
           <div className="relative">
             <div className="absolute -top-6 -right-6 hidden md:block">
               <Award className="h-24 w-24 text-battlebot-golden-yellow/20" />
@@ -223,14 +223,14 @@ const TopFightersLeaderboard: React.FC = () => {
             
             <div className="battle-card">
               <div className="p-6">
-                <h3 className="text-2xl font-bold text-battlebot-light-text mb-4 text-center">
+                <h3 className="text-2xl font-bold text-battlebot-light-text mb-6 text-center">
                   <Trophy className="inline-block mr-2 h-5 w-5 text-battlebot-golden-yellow" />
-                  Top Fighters
+                  Top Combat Robots
                 </h3>
                 
-                <div className="space-y-3">
-                  {topFighters.map((fighter, index) => (
-                    <TopFighterRow key={fighter.id} fighter={fighter} rank={index + 1} />
+                <div className="space-y-4">
+                  {topRobots.map((robot, index) => (
+                    <TopRobotRow key={robot.id} robot={robot} rank={index + 1} />
                   ))}
                 </div>
                 
@@ -239,7 +239,7 @@ const TopFightersLeaderboard: React.FC = () => {
                     to="/teams" 
                     className="battle-button"
                   >
-                    View All Fighters
+                    View All Combat Robots
                   </Link>
                 </div>
               </div>
@@ -254,12 +254,12 @@ const TopFightersLeaderboard: React.FC = () => {
             
             <div className="battle-card">
               <div className="p-6">
-                <h3 className="text-2xl font-bold text-battlebot-light-text mb-4 text-center">
+                <h3 className="text-2xl font-bold text-battlebot-light-text mb-6 text-center">
                   <Trophy className="inline-block mr-2 h-5 w-5 text-battlebot-golden-yellow" />
                   Team Standings
                 </h3>
                 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {topTeams.map((team, index) => (
                     <TopTeamRow key={team.id} team={team} rank={index + 1} />
                   ))}
