@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import RouletteParts from "./RouletteParts";
+import RouletteContainer from "./roulette/RouletteContainer";
 
 const GambleDialog = () => {
   return (
@@ -23,7 +23,7 @@ const GambleDialog = () => {
             Spin the wheel to win robot parts for your next battle!
           </DialogDescription>
         </DialogHeader>
-        <RouletteParts onClose={() => document.querySelector<HTMLButtonElement>('[data-state="open"]')?.click()} />
+        <RouletteContainer />
       </DialogContent>
     </Dialog>
   );

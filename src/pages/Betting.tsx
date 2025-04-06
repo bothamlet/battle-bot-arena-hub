@@ -10,7 +10,7 @@ import { Trophy, DollarSign, Flag, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
-import RoulettePartsNew from "../components/RoulettePartsNew";
+import RouletteContainer from "../components/roulette/RouletteContainer";
 
 type Match = {
   id: number;
@@ -320,7 +320,7 @@ const Betting = () => {
                   Try your luck on the wheel of fortune to win valuable robot parts for your next battle!
                 </p>
               </div>
-              <RoulettePartsNew />
+              <RouletteContainer />
             </TabsContent>
           </Tabs>
 
