@@ -4,6 +4,23 @@ import { motion } from "framer-motion";
 import { Trophy } from "lucide-react";
 import { rouletteParts } from "./RouletteData";
 
+function getPolygonPoints(startAngle: number, sweepAngle: number, steps = 6): string {
+  const cx = 50;
+  const cy = 50;
+  const radius = 50;
+
+  const points = [`${cx}% ${cy}%`];
+
+  for (let i = 0; i <= steps; i++) {
+    const angle = (startAngle + (sweepAngle * i) / steps) * (Math.PI / 180);
+    const x = cx + radius * Math.cos(angle);
+    const y = cy + radius * Math.sin(angle);
+    points.push(`${x}% ${y}%`);
+  }
+
+  return points.join(", ");
+}
+
 interface RouletteWheelProps {
   spinning: boolean;
   rotationAngle: number;
@@ -33,18 +50,17 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
           boxShadow: "inset 0 0 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5)"
         }}
       >
-        <motion.div 
-          className="w-full h-full relative"
-          animate={{ 
-            rotate: rotationAngle 
-          }}
-          initial={{ rotate: 0 }}
-          transition={{ 
-            duration: spinning ? 12 : 0, 
-            ease: spinning ? [0.2, 0.1, 0.3, 1.0] : "easeOut",
-            type: "tween"
-          }}
-        >
+      <motion.div 
+        key={spinning ? 'spinning' : 'stopped'} // force re-render on spin start
+        className="w-full h-full relative"
+        animate={{ rotate: rotationAngle }}
+        initial={{ rotate: 0 }}
+        transition={{ 
+          duration: spinning ? 12 : 0, 
+          ease: spinning ? [0.2, 0.1, 0.3, 1.0] : "easeOut",
+          type: "tween"
+        }}
+      >
           {rouletteParts.map((part, index) => {
             const startAngle = index * segmentAngle;
             const isEvenSegment = index % 2 === 0;
@@ -64,14 +80,15 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
                     transform: 'translateX(50%)'
                   }}
                 >
-                  <div 
-                    className={`absolute w-[500%] h-[500%] bottom-0 left-[-200%] ${isEvenSegment ? 'bg-red-900' : 'bg-black'}`}
-                    style={{
-                      transform: `rotate(${segmentAngle/2}deg)`,
-                      transformOrigin: '50% 0',
-                      boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.7)'
-                    }}
-                  >
+                <div
+                  className="absolute w-full h-full"
+                  style={{
+                    clipPath: `polygon(50% 50%, ${getPolygonPoints(startAngle, segmentAngle)})`,
+                    backgroundColor: isEvenSegment ? '#8B0000' : '#000000',
+                    transform: `rotate(${startAngle}deg)`,
+                    transformOrigin: 'center'
+                  }}
+                >
                     <div className="absolute bottom-[40%] left-[48%] w-full text-center transform -translate-x-1/2 rotate-90">
                       <div className={`inline-block ${part.rarity === "legendary" ? "bg-yellow-600" : isEvenSegment ? "bg-red-800" : "bg-gray-800"} p-2 rounded-full shadow-md`}>
                         {part.icon}
