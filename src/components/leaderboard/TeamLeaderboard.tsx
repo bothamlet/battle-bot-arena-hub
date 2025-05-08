@@ -10,6 +10,9 @@ interface TeamLeaderboardProps {
 }
 
 const TeamLeaderboard: React.FC<TeamLeaderboardProps> = ({ className }) => {
+  // Only show the top 5 teams on the homepage leaderboard
+  const topFiveTeams = topTeams.slice(0, 5);
+  
   return (
     <div className={`relative ${className || ""}`}>
       <div className="battle-card">
@@ -20,7 +23,7 @@ const TeamLeaderboard: React.FC<TeamLeaderboardProps> = ({ className }) => {
           </h3>
           
           <div className="space-y-4">
-            {topTeams.map((team, index) => (
+            {topFiveTeams.map((team, index) => (
               <TopTeamRow key={team.id} team={team} rank={index + 1} />
             ))}
           </div>

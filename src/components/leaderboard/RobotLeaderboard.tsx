@@ -10,6 +10,9 @@ interface RobotLeaderboardProps {
 }
 
 const RobotLeaderboard: React.FC<RobotLeaderboardProps> = ({ className }) => {
+  // Only show the top 5 robots on the homepage leaderboard
+  const topFiveRobots = topRobots.slice(0, 5);
+  
   return (
     <div className={`relative ${className || ""}`}>
       <div className="battle-card">
@@ -20,7 +23,7 @@ const RobotLeaderboard: React.FC<RobotLeaderboardProps> = ({ className }) => {
           </h3>
           
           <div className="space-y-4">
-            {topRobots.map((robot, index) => (
+            {topFiveRobots.map((robot, index) => (
               <TopRobotRow key={robot.id} robot={robot} rank={index + 1} />
             ))}
           </div>

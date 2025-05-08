@@ -7,42 +7,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TopRobotRow from "../components/leaderboard/TopRobotRow";
 import TopTeamRow from "../components/leaderboard/TopTeamRow";
 import { topRobots, topTeams } from "@/data/leaderboardData";
-
-// Team data structure
-interface TeamMember {
-  name: string;
-  role: string;
-  robotName: string;
-  imageUrl: string;
-}
-
-interface Team {
-  id: number;
-  name: string;
-  rank: number;
-  points: number;
-  wins: number;
-  losses: number;
-  knockouts: number;
-  members: TeamMember[];
-  logo: string;
-  description: string;
-}
-
-// Individual fighter data
-interface Fighter {
-  id: number;
-  name: string;
-  team: string;
-  robotName: string;
-  wins: number;
-  losses: number;
-  knockouts: number;
-  imageUrl: string;
-  specialty: string;
-  rank: number;
-  weightClass: string;
-}
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const Teams: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -55,6 +27,15 @@ const Teams: React.FC = () => {
     robot.robotName.toLowerCase().includes(searchTerm.toLowerCase()) || 
     robot.teamName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Group robots by team for the detailed view
+  const robotsByTeam = topRobots.reduce((acc, robot) => {
+    if (!acc[robot.teamName]) {
+      acc[robot.teamName] = [];
+    }
+    acc[robot.teamName].push(robot);
+    return acc;
+  }, {} as Record<string, typeof topRobots>);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -111,7 +92,34 @@ const Teams: React.FC = () => {
                 <div className="space-y-4">
                   {filteredTeams.length > 0 ? (
                     filteredTeams.map((team, index) => (
-                      <TopTeamRow key={team.id} team={team} rank={index + 1} />
+                      <div key={team.id} className="mb-8">
+                        <TopTeamRow team={team} rank={index + 1} />
+                        
+                        {robotsByTeam[team.name] && (
+                          <div className="mt-2 ml-12 bg-battlebot-deep-navy-blue/50 rounded-lg p-4">
+                            <h3 className="text-battlebot-light-text font-semibold mb-3">Team Robots</h3>
+                            <div className="grid md:grid-cols-2 gap-3">
+                              {robotsByTeam[team.name].map((robot) => (
+                                <div 
+                                  key={robot.id} 
+                                  className="bg-battlebot-rich-blue/30 rounded-lg p-3 flex items-center"
+                                >
+                                  <div className="w-16 h-16 rounded-full overflow-hidden border border-battlebot-golden-yellow mr-3">
+                                    <img src={robot.imageUrl} alt={robot.robotName} className="w-full h-full object-cover" />
+                                  </div>
+                                  <div>
+                                    <div className="text-battlebot-golden-yellow font-bold">{robot.robotName}</div>
+                                    <div className="text-battlebot-light-text/70 text-xs">Operated by {robot.ownerName}</div>
+                                    <div className="text-battlebot-light-text/90 text-sm mt-1">
+                                      {robot.wins} Wins · {robot.knockouts} KOs
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     ))
                   ) : (
                     <div className="text-center py-8 text-battlebot-light-text">
