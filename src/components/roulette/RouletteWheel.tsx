@@ -1,7 +1,7 @@
 
-import React from "react";
+import React, { useRef } from "react";
 import { motion } from "framer-motion";
-import { Trophy } from "lucide-react";
+import { DollarSign, Cpu, Cog, Wrench, Shield, Trophy, Rocket, Zap } from "lucide-react";
 import { RoulettePart, rarityColors } from "./RouletteTypes";
 import { rouletteParts } from "./RouletteData";
 
@@ -12,17 +12,24 @@ interface RouletteWheelProps {
 
 const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }) => {
   return (
-    <div className="relative w-72 h-72 md:w-96 md:h-96 mx-auto">
+    <div className="relative w-72 h-72 md:w-[28rem] md:h-[28rem] mx-auto">
+      {/* Wooden outer ring */}
+      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-800 to-amber-700 shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]"></div>
+      
+      {/* Outer decorative ring */}
+      <div className="absolute inset-[8px] rounded-full border-[8px] border-amber-600 shadow-lg"></div>
+      
       {/* Pointer indicator */}
-      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-10 w-8 h-10">
-        <div className="w-0 h-0 border-l-[16px] border-r-[16px] border-t-[24px] border-l-transparent border-r-transparent border-t-battlebot-golden-yellow mx-auto shadow-lg"></div>
+      <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 z-20 w-8 h-12">
+        <div className="w-0 h-0 border-l-[16px] border-r-[16px] border-t-[24px] border-l-transparent border-r-transparent border-t-red-600 mx-auto shadow-lg"></div>
+        <div className="h-2 w-4 bg-red-700 mx-auto rounded-b-sm"></div>
       </div>
             
       {/* Roulette wheel */}
       <div 
-        className="w-full h-full rounded-full overflow-hidden border-8 border-battlebot-golden-yellow relative"
+        className="absolute inset-[16px] rounded-full overflow-hidden border-8 border-amber-900 bg-amber-950"
         style={{
-          boxShadow: "0 0 20px rgba(255, 215, 0, 0.5)"
+          boxShadow: "inset 0 0 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5)"
         }}
       >
         <motion.div 
@@ -30,16 +37,17 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
           animate={{ 
             rotate: rotationAngle 
           }}
+          initial={{ rotate: 0 }}
           transition={{ 
-            duration: spinning ? 5 : 0, 
-            ease: spinning ? "easeInOut" : "easeOut",
-            type: "spring",
-            damping: 20
+            duration: spinning ? 12 : 0, 
+            ease: spinning ? [0.2, 0.1, 0.3, 1.0] : "easeOut",
+            type: "tween"
           }}
         >
           {rouletteParts.map((part, index) => {
             const segmentAngle = 360 / rouletteParts.length;
             const startAngle = index * segmentAngle;
+            const isEvenSegment = index % 2 === 0;
             
             return (
               <div 
@@ -53,16 +61,22 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
                 <div 
                   className="absolute w-full h-1/2 overflow-hidden origin-bottom"
                   style={{ 
-                    transform: 'translateX(50%)',
-                    backgroundColor: part.color === 'bg-red-500' ? '#7f1d1d' : '#111'
+                    transform: 'translateX(50%)'
                   }}
                 >
-                  <div className="relative w-full h-full">
-                    <div className="absolute bottom-3 left-0 w-full text-center transform -translate-x-1/2 rotate-90">
-                      <div className={`inline-block ${rarityColors[part.rarity]} p-2 rounded-full`}>
+                  <div 
+                    className={`absolute w-[500%] h-[500%] bottom-0 left-[-200%] ${isEvenSegment ? 'bg-red-900' : 'bg-black'}`}
+                    style={{
+                      transform: `rotate(${segmentAngle/2}deg)`,
+                      transformOrigin: '50% 0',
+                      boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.7)'
+                    }}
+                  >
+                    <div className="absolute bottom-[40%] left-[48%] w-full text-center transform -translate-x-1/2 rotate-90">
+                      <div className={`inline-block ${part.rarity === "legendary" ? "bg-yellow-600" : isEvenSegment ? "bg-red-800" : "bg-gray-800"} p-2 rounded-full shadow-md`}>
                         {part.icon}
                       </div>
-                      <p className="text-battlebot-light-text text-sm mt-1 font-bold">{part.name}</p>
+                      <p className="text-white text-md mt-1 font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">{part.name}</p>
                     </div>
                   </div>
                 </div>
@@ -72,17 +86,27 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
         </motion.div>
               
         {/* Center cap */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-battlebot-golden-yellow flex items-center justify-center z-10">
-          <div className="w-10 h-10 rounded-full bg-battlebot-deep-navy-blue flex items-center justify-center">
-            <Trophy className="h-6 w-6 text-battlebot-golden-yellow" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-gradient-to-r from-amber-700 to-amber-800 flex items-center justify-center z-10 shadow-[inset_0_2px_4px_rgba(255,255,255,0.3),0_5px_10px_rgba(0,0,0,0.7)]">
+          <div className="w-14 h-14 rounded-full bg-amber-950 flex items-center justify-center border-2 border-amber-800 shadow-[inset_0_0_8px_rgba(0,0,0,0.8)]">
+            <Trophy className="h-8 w-8 text-amber-400" />
           </div>
         </div>
       </div>
             
-      {/* Blinking lights around the wheel */}
+      {/* Metal ball track */}
+      <div 
+        className="absolute inset-[10px] rounded-full pointer-events-none"
+        style={{ 
+          background: 'linear-gradient(135deg, #d4af37 0%, #f9e076 50%, #d4af37 100%)',
+          boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.3)'
+        }}
+      >
+      </div>
+      
+      {/* Casino-style number pegs */}
       <div className="absolute inset-0 -m-2 rounded-full pointer-events-none">
-        {Array.from({ length: 20 }).map((_, i) => {
-          const angle = (i / 20) * 360;
+        {Array.from({ length: 28 }).map((_, i) => {
+          const angle = (i / 28) * 360;
           const radian = (angle * Math.PI) / 180;
           const radius = 48.5;
           const x = radius * Math.cos(radian);
@@ -91,17 +115,27 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
           return (
             <div 
               key={i}
-              className={`absolute w-3 h-3 rounded-full ${spinning ? 'animate-pulse' : ''}`}
+              className={`absolute w-2 h-2 rounded-full ${spinning ? 'animate-pulse' : ''}`}
               style={{ 
                 left: `calc(50% + ${x}%)`,
                 top: `calc(50% + ${y}%)`,
-                backgroundColor: spinning ? (i % 2 === 0 ? '#FFD700' : '#FF4500') : '#555',
+                background: 'radial-gradient(circle at 30% 30%, #f9e076, #d4af37)',
+                boxShadow: '0 0 2px rgba(0,0,0,0.5)',
                 animationDelay: `${i * 0.1}s` 
               }}
             ></div>
           );
         })}
       </div>
+
+      {/* Additional wooden texture overlay */}
+      <div 
+        className="absolute inset-0 rounded-full opacity-20 pointer-events-none"
+        style={{
+          backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.01\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")',
+          mixBlendMode: 'multiply'
+        }}
+      ></div>
     </div>
   );
 };

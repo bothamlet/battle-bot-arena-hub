@@ -16,10 +16,10 @@ const GambleDialog = () => {
       <DialogTrigger asChild>
         <span className="cursor-pointer">Gamble</span>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] bg-battlebot-dark-blue-black border border-battlebot-bright-yellow">
+      <DialogContent className="sm:max-w-[800px] bg-amber-950 border border-amber-700">
         <DialogHeader>
-          <DialogTitle className="text-battlebot-golden-yellow">Battle Parts Gamble</DialogTitle>
-          <DialogDescription className="text-battlebot-light-text">
+          <DialogTitle className="text-amber-300">Battle Parts Gamble</DialogTitle>
+          <DialogDescription className="text-amber-200/80">
             Spin the wheel to win robot parts for your next battle!
           </DialogDescription>
         </DialogHeader>
