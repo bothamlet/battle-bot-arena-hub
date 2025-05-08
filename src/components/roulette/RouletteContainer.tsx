@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { Trophy, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -59,6 +59,7 @@ const RouletteContainer: React.FC = () => {
     // Calculate rotation angle (multiple of 360 + winningIndex position)
     const segmentAngle = 360 / rouletteParts.length;
     const extraSpins = 8; // More spins for dramatic effect
+    // Add offset to land correctly on the segment
     const targetAngle = extraSpins * 360 + (winningIndex * segmentAngle);
     
     // Set the rotation angle

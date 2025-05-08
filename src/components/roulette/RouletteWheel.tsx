@@ -1,8 +1,7 @@
 
-import React, { useRef } from "react";
+import React from "react";
 import { motion } from "framer-motion";
-import { DollarSign, Cpu, Cog, Wrench, Shield, Trophy, Rocket, Zap } from "lucide-react";
-import { RoulettePart, rarityColors } from "./RouletteTypes";
+import { Trophy } from "lucide-react";
 import { rouletteParts } from "./RouletteData";
 
 interface RouletteWheelProps {
@@ -11,6 +10,8 @@ interface RouletteWheelProps {
 }
 
 const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }) => {
+  const segmentAngle = 360 / rouletteParts.length;
+
   return (
     <div className="relative w-72 h-72 md:w-[28rem] md:h-[28rem] mx-auto">
       {/* Wooden outer ring */}
@@ -33,7 +34,7 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
         }}
       >
         <motion.div 
-          className="w-full h-full"
+          className="w-full h-full relative"
           animate={{ 
             rotate: rotationAngle 
           }}
@@ -45,7 +46,6 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
           }}
         >
           {rouletteParts.map((part, index) => {
-            const segmentAngle = 360 / rouletteParts.length;
             const startAngle = index * segmentAngle;
             const isEvenSegment = index % 2 === 0;
             
