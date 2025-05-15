@@ -151,7 +151,8 @@ const FireworksDisplay: React.FC<FireworksDisplayProps> = ({ show, intensity }) 
         ))}
       </AnimatePresence>
       
-      <style jsx>{`
+      <style>
+        {`
         @keyframes firework-burst {
           0% { transform: scale(0); opacity: 1; }
           50% { transform: scale(1); opacity: 0.8; }
@@ -169,7 +170,8 @@ const FireworksDisplay: React.FC<FireworksDisplayProps> = ({ show, intensity }) 
           50% { opacity: 0.8; transform: rotate(inherit) translate(calc(inherit + 15px), 0) scale(0.8); }
           100% { transform: rotate(inherit) translate(calc(inherit), 0) scale(1); opacity: 1; }
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
