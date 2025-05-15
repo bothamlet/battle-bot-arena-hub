@@ -1,7 +1,6 @@
-
+import React from "react";
 import { DollarSign, Zap, Cpu, Cog, Wrench, Trophy, Rocket, Shield } from "lucide-react";
 import { RoulettePart } from "./RouletteTypes";
-import React from "react";
 
 export const rouletteParts: RoulettePart[] = [
   { 
