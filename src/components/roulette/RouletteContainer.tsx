@@ -131,7 +131,10 @@ const RouletteContainer: React.FC = () => {
               }}
             ></div>
 
-            <RouletteWheel spinning={spinning} rotationAngle={rotationAngle} />
+            <RouletteWheel 
+              spinning={spinning} 
+              rotationAngle={rotationAngle} 
+            />
           </div>
           <RouletteResult
             result={result}

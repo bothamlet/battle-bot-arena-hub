@@ -132,7 +132,10 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
                     className="absolute bottom-[20%] left-1/2"
                     style={{
                       transform: `translateX(-50%) rotate(${segmentAngle / 2}deg)`,
-                      transformOrigin: "center"
+                      transformOrigin: "center",
+                      width: "100%", // Added to ensure label is visible
+                      textAlign: "center", // Added to center the content
+                      zIndex: 10 // Ensure text is above other elements
                     }}
                   >
                     <div className={`inline-block ${
