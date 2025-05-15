@@ -35,27 +35,6 @@ const RouletteResult: React.FC<RouletteResultProps> = ({
     }));
   }, []);
 
-  // Generate fireworks for celebrations
-  const fireworks = useMemo(() => {
-    const count = isRare ? 15 : isUncommon ? 8 : 4;
-    return Array.from({ length: count }).map((_, i) => ({
-      id: i,
-      size: Math.random() * 80 + 40,
-      left: Math.random() * 120 - 10, // Some can go outside the container
-      top: Math.random() * 120 - 10,
-      delay: Math.random() * 2,
-      duration: Math.random() * 1.5 + 0.8,
-      color: [
-        "#FF5252", // Red
-        "#FFD740", // Yellow
-        "#40C4FF", // Blue
-        "#69F0AE", // Green
-        "#E040FB", // Purple
-        "#FF6E40", // Orange
-      ][Math.floor(Math.random() * 6)],
-    }));
-  }, [isRare, isUncommon]);
-
   // Precomputed style and class variables for readability:
   const containerBgClass = isRare
     ? "bg-gradient-to-r from-amber-900 to-amber-800"
@@ -117,41 +96,6 @@ const RouletteResult: React.FC<RouletteResultProps> = ({
                 ></div>
               ))}
             </div>
-
-            {/* Fireworks effect */}
-            {fireworks.map((firework) => (
-              <div
-                key={`firework-${firework.id}`}
-                className="absolute"
-                style={{
-                  left: `${firework.left}%`,
-                  top: `${firework.top}%`,
-                  zIndex: 5,
-                }}
-              >
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{
-                    scale: [0, 1, 0.9],
-                    opacity: [0, 1, 0],
-                  }}
-                  transition={{
-                    duration: firework.duration,
-                    delay: firework.delay,
-                    ease: [0.2, 0.8, 0.2, 1],
-                  }}
-                >
-                  <div
-                    className="firework-burst"
-                    style={{
-                      width: `${firework.size}px`,
-                      height: `${firework.size}px`,
-                      background: `radial-gradient(circle, ${firework.color} 0%, transparent 70%)`,
-                    }}
-                  ></div>
-                </motion.div>
-              </div>
-            ))}
 
             {/* Rare win celebration icons */}
             {isRare && (

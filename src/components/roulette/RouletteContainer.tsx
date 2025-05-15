@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from "react";
 import { Trophy, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { rouletteParts } from "./RouletteData";
 import RouletteWheel from "./RouletteWheel";
 import RouletteResult from "./RouletteResult";
 import PartsList from "./PartsList";
+import FireworksDisplay from "./FireworksDisplay";
 
 const RouletteContainer: React.FC = () => {
   const [spinning, setSpinning] = useState(false);
@@ -88,8 +90,24 @@ const RouletteContainer: React.FC = () => {
     }, spinDuration);
   };
 
+  // Determine fireworks intensity based on rarity
+  const getFireworkIntensity = () => {
+    if (!result) return "low";
+    
+    if (result.rarity === "legendary") return "high";
+    if (result.rarity === "epic") return "high";
+    if (result.rarity === "rare") return "medium";
+    return "low";
+  };
+
   return (
     <div className="bg-gradient-to-b from-amber-950 to-amber-900 rounded-lg border-4 border-amber-800 shadow-2xl max-w-4xl mx-auto overflow-hidden">
+      {/* Display fireworks across the entire webpage when celebration is active */}
+      <FireworksDisplay 
+        show={showCelebration} 
+        intensity={getFireworkIntensity()} 
+      />
+      
       <div className="p-6">
         <h2 className="text-4xl font-bold text-center mb-4 text-amber-300 flex items-center justify-center">
           <Trophy className="h-8 w-8 mr-3 text-amber-400" />
