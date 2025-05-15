@@ -1,6 +1,8 @@
+
 import React, { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RoulettePart } from "./RouletteTypes";
+import { Sparkles, PartyPopper } from "lucide-react";
 
 interface RouletteResultProps {
   result: RoulettePart | null;
@@ -16,6 +18,7 @@ const RouletteResult: React.FC<RouletteResultProps> = ({
   if (!spinCompleted || !result) return null;
 
   const isRare = result.rarity === "legendary" || result.rarity === "epic";
+  const isUncommon = result.rarity === "rare" || result.rarity === "uncommon";
 
   // Precompute a stable confetti array so animations won't jitter with re-randomization.
   const confettiItems = useMemo(() => {
@@ -31,6 +34,27 @@ const RouletteResult: React.FC<RouletteResultProps> = ({
       animationDelay: Math.random() * 5,
     }));
   }, []);
+
+  // Generate fireworks for celebrations
+  const fireworks = useMemo(() => {
+    const count = isRare ? 15 : isUncommon ? 8 : 4;
+    return Array.from({ length: count }).map((_, i) => ({
+      id: i,
+      size: Math.random() * 80 + 40,
+      left: Math.random() * 120 - 10, // Some can go outside the container
+      top: Math.random() * 120 - 10,
+      delay: Math.random() * 2,
+      duration: Math.random() * 1.5 + 0.8,
+      color: [
+        "#FF5252", // Red
+        "#FFD740", // Yellow
+        "#40C4FF", // Blue
+        "#69F0AE", // Green
+        "#E040FB", // Purple
+        "#FF6E40", // Orange
+      ][Math.floor(Math.random() * 6)],
+    }));
+  }, [isRare, isUncommon]);
 
   // Precomputed style and class variables for readability:
   const containerBgClass = isRare
@@ -73,8 +97,9 @@ const RouletteResult: React.FC<RouletteResultProps> = ({
         className={`mt-8 p-8 rounded-lg flex flex-col items-center justify-center relative overflow-hidden ${containerBgClass} border-2 ${containerBorderClass}`}
         style={{ boxShadow: containerBoxShadow }}
       >
-        {showCelebration && isRare && (
+        {showCelebration && (
           <>
+            {/* Confetti effect for all wins */}
             <div className="absolute inset-0 z-0 overflow-hidden">
               {confettiItems.map((item) => (
                 <div
@@ -92,10 +117,73 @@ const RouletteResult: React.FC<RouletteResultProps> = ({
                 ></div>
               ))}
             </div>
+
+            {/* Fireworks effect */}
+            {fireworks.map((firework) => (
+              <div
+                key={`firework-${firework.id}`}
+                className="absolute"
+                style={{
+                  left: `${firework.left}%`,
+                  top: `${firework.top}%`,
+                  zIndex: 5,
+                }}
+              >
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{
+                    scale: [0, 1, 0.9],
+                    opacity: [0, 1, 0],
+                  }}
+                  transition={{
+                    duration: firework.duration,
+                    delay: firework.delay,
+                    ease: [0.2, 0.8, 0.2, 1],
+                  }}
+                >
+                  <div
+                    className="firework-burst"
+                    style={{
+                      width: `${firework.size}px`,
+                      height: `${firework.size}px`,
+                      background: `radial-gradient(circle, ${firework.color} 0%, transparent 70%)`,
+                    }}
+                  ></div>
+                </motion.div>
+              </div>
+            ))}
+
+            {/* Rare win celebration icons */}
+            {isRare && (
+              <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ 
+                    scale: [0, 1.5, 1], 
+                    rotate: [0, 0, 0],
+                    y: [0, -20, 0]
+                  }}
+                  transition={{ 
+                    duration: 1.2,
+                    delay: 0.2,
+                    times: [0, 0.6, 1]
+                  }}
+                  className="text-amber-400"
+                >
+                  <PartyPopper size={80} />
+                </motion.div>
+              </div>
+            )}
+
             <style>{`
               @keyframes fall {
                 0% { transform: translateY(-20px); opacity: 1; }
                 100% { transform: translateY(500px); opacity: 0; }
+              }
+              
+              @keyframes sparkle {
+                0%, 100% { opacity: 0; transform: scale(0.4) rotate(45deg); }
+                50% { opacity: 1; transform: scale(1) rotate(45deg); }
               }
             `}</style>
           </>
@@ -110,10 +198,42 @@ const RouletteResult: React.FC<RouletteResultProps> = ({
             className="w-32 h-32 flex items-center justify-center"
           >
             <div
-              className={`p-6 rounded-full shadow-lg ${iconBgClass}`}
+              className={`p-6 rounded-full shadow-lg ${iconBgClass} relative`}
               style={{ boxShadow: iconBoxShadow }}
             >
               {result.icon}
+              
+              {/* Sparkle effect around icon for rare/legendary items */}
+              {isRare && showCelebration && (
+                <>
+                  {[...Array(8)].map((_, i) => (
+                    <motion.div
+                      key={`sparkle-${i}`}
+                      className="absolute"
+                      style={{
+                        left: `${50 + 45 * Math.cos(i * (Math.PI / 4))}%`,
+                        top: `${50 + 45 * Math.sin(i * (Math.PI / 4))}%`,
+                        width: '20px',
+                        height: '20px',
+                        translateX: '-50%',
+                        translateY: '-50%',
+                      }}
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ 
+                        opacity: [0, 1, 0],
+                        scale: [0.2, 1, 0.2],
+                      }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1.8,
+                        delay: i * 0.2,
+                      }}
+                    >
+                      <Sparkles className="text-amber-300" />
+                    </motion.div>
+                  ))}
+                </>
+              )}
             </div>
           </motion.div>
 
