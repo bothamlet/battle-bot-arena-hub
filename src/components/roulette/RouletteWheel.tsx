@@ -1,10 +1,11 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Trophy } from "lucide-react";
 import { rouletteParts } from "./RouletteData";
 
 function getPolygonPoints(startAngle: number, sweepAngle: number, steps = 6): string {
+  // We assume a circle centered at 50% 50% with a radius of 50%.
+  // By using startAngle = 0 here (in the updated segment drawing) we get the slice shape.
   const cx = 50;
   const cy = 50;
   const radius = 50;
@@ -33,16 +34,16 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
     <div className="relative w-72 h-72 md:w-[28rem] md:h-[28rem] mx-auto">
       {/* Wooden outer ring */}
       <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-800 to-amber-700 shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]"></div>
-      
+
       {/* Outer decorative ring */}
       <div className="absolute inset-[8px] rounded-full border-[8px] border-amber-600 shadow-lg"></div>
-      
+
       {/* Pointer indicator */}
       <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 z-20 w-8 h-12">
         <div className="w-0 h-0 border-l-[16px] border-r-[16px] border-t-[24px] border-l-transparent border-r-transparent border-t-red-600 mx-auto shadow-lg"></div>
         <div className="h-2 w-4 bg-red-700 mx-auto rounded-b-sm"></div>
       </div>
-            
+
       {/* Roulette wheel */}
       <div 
         className="absolute inset-[16px] rounded-full overflow-hidden border-8 border-amber-900 bg-amber-950"
@@ -50,58 +51,66 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
           boxShadow: "inset 0 0 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5)"
         }}
       >
-      <motion.div 
-        key={spinning ? 'spinning' : 'stopped'} // force re-render on spin start
-        className="w-full h-full relative"
-        animate={{ rotate: rotationAngle }}
-        initial={{ rotate: 0 }}
-        transition={{ 
-          duration: spinning ? 12 : 0, 
-          ease: spinning ? [0.2, 0.1, 0.3, 1.0] : "easeOut",
-          type: "tween"
-        }}
-      >
+        {/* Remove the key hack so the rotation can animate properly */}
+        <motion.div 
+          className="w-full h-full relative"
+          animate={{ rotate: rotationAngle }}
+          initial={{ rotate: 0 }}
+          transition={{ 
+            duration: spinning ? 12 : 0, 
+            ease: spinning ? [0.2, 0.1, 0.3, 1.0] : "easeOut",
+            type: "tween"
+          }}
+        >
           {rouletteParts.map((part, index) => {
+            // Each segment will be rotated into place.
             const startAngle = index * segmentAngle;
             const isEvenSegment = index % 2 === 0;
             
             return (
               <div 
-                key={index} 
-                className="absolute top-0 left-0 w-full h-full"
-                style={{ 
+                key={index}
+                className="absolute inset-0"
+                style={{
                   transform: `rotate(${startAngle}deg)`,
                   transformOrigin: "50% 50%"
                 }}
               >
                 <div 
-                  className="absolute w-full h-1/2 overflow-hidden origin-bottom"
-                  style={{ 
-                    transform: 'translateX(50%)'
-                  }}
-                >
-                <div
-                  className="absolute w-full h-full"
+                  className="absolute inset-0"
                   style={{
-                    clipPath: `polygon(50% 50%, ${getPolygonPoints(startAngle, segmentAngle)})`,
+                    // Now compute the slice shape relative to 0 (local coordinate)
+                    clipPath: `polygon(50% 50%, ${getPolygonPoints(0, segmentAngle)})`,
                     backgroundColor: isEvenSegment ? '#8B0000' : '#000000',
-                    transform: `rotate(${startAngle}deg)`,
-                    transformOrigin: 'center'
                   }}
                 >
-                    <div className="absolute bottom-[40%] left-[48%] w-full text-center transform -translate-x-1/2 rotate-90">
-                      <div className={`inline-block ${part.rarity === "legendary" ? "bg-yellow-600" : isEvenSegment ? "bg-red-800" : "bg-gray-800"} p-2 rounded-full shadow-md`}>
-                        {part.icon}
-                      </div>
-                      <p className="text-white text-md mt-1 font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">{part.name}</p>
+                  <div 
+                    // Adjust the label container so that it sits nicely in the slice.
+                    className="absolute bottom-[20%] left-1/2"
+                    style={{
+                      transform: `translateX(-50%) rotate(${segmentAngle / 2}deg)`,
+                      transformOrigin: "center"
+                    }}
+                  >
+                    <div className={`inline-block ${
+                        part.rarity === "legendary" 
+                          ? "bg-yellow-600" 
+                          : isEvenSegment 
+                          ? "bg-red-800" 
+                          : "bg-gray-800"
+                      } p-2 rounded-full shadow-md`}>
+                      {part.icon}
                     </div>
+                    <p className="text-white text-md mt-1 font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] text-center">
+                      {part.name}
+                    </p>
                   </div>
                 </div>
               </div>
             );
           })}
         </motion.div>
-              
+
         {/* Center cap */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-gradient-to-r from-amber-700 to-amber-800 flex items-center justify-center z-10 shadow-[inset_0_2px_4px_rgba(255,255,255,0.3),0_5px_10px_rgba(0,0,0,0.7)]">
           <div className="w-14 h-14 rounded-full bg-amber-950 flex items-center justify-center border-2 border-amber-800 shadow-[inset_0_0_8px_rgba(0,0,0,0.8)]">
@@ -109,7 +118,7 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
           </div>
         </div>
       </div>
-            
+
       {/* Metal ball track */}
       <div 
         className="absolute inset-[10px] rounded-full pointer-events-none"
@@ -117,9 +126,8 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
           background: 'linear-gradient(135deg, #d4af37 0%, #f9e076 50%, #d4af37 100%)',
           boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.3)'
         }}
-      >
-      </div>
-      
+      ></div>
+
       {/* Casino-style number pegs */}
       <div className="absolute inset-0 -m-2 rounded-full pointer-events-none">
         {Array.from({ length: 28 }).map((_, i) => {
@@ -128,7 +136,6 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
           const radius = 48.5;
           const x = radius * Math.cos(radian);
           const y = radius * Math.sin(radian);
-                
           return (
             <div 
               key={i}
