@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { Trophy } from "lucide-react";
@@ -76,16 +77,56 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
                   transformOrigin: "50% 50%",
                 }}
               >
-                {/* The inner wedge is drawn with a clipPath based on a 0° wedge.
-                    We also scale it slightly to create visible separation between segments. */}
+                {/* The inner wedge with enhanced 3D effect */}
                 <div 
                   className="absolute inset-0"
                   style={{
                     clipPath: `polygon(50% 50%, ${getPolygonPoints(segmentAngle)})`,
                     backgroundColor: isEvenSegment ? "#8B0000" : "#000000",
-                    transform: "scale(0.98)", // Create a tiny gap between segments.
+                    transform: "scale(0.98)", // Create a tiny gap between segments
+                    boxShadow: isEvenSegment 
+                      ? "inset 0 0 15px rgba(255, 255, 255, 0.1)" 
+                      : "inset 0 0 15px rgba(255, 255, 255, 0.05)",
                   }}
                 >
+                  {/* Radial highlight to create depth effect */}
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: `radial-gradient(
+                        circle at 50% 50%,
+                        ${isEvenSegment ? 'rgba(200, 0, 0, 0.8)' : 'rgba(40, 40, 40, 0.8)'} 0%,
+                        ${isEvenSegment ? '#8B0000' : '#000000'} 70%
+                      )`,
+                      clipPath: `polygon(50% 50%, ${getPolygonPoints(segmentAngle)})`,
+                    }}
+                  ></div>
+
+                  {/* Segment divider lines */}
+                  <div 
+                    className="absolute h-1/2 w-[2px] bg-amber-900 left-1/2 top-0"
+                    style={{
+                      transform: "translateX(-50%)",
+                      boxShadow: "0 0 3px rgba(0,0,0,0.5)"
+                    }}
+                  ></div>
+
+                  {/* Inner segment border highlight */}
+                  <div
+                    className="absolute"
+                    style={{
+                      top: "0%",
+                      left: "50%",
+                      width: "50%",
+                      height: "50%",
+                      background: `linear-gradient(${startAngle + segmentAngle/2}deg, 
+                        rgba(255, 255, 255, 0.1) 0%, 
+                        rgba(255, 255, 255, 0) 60%)`,
+                      transformOrigin: "0% 100%",
+                      transform: "rotate(0deg)"
+                    }}
+                  ></div>
+
                   {/* Label container: rotated by half the segment angle so content appears centered */}
                   <div
                     className="absolute bottom-[20%] left-1/2"
@@ -96,7 +137,7 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
                   >
                     <div className={`inline-block ${
                         part.rarity === "legendary" 
-                          ? "bg-yellow-600" 
+                          ? "bg-yellow-600 shadow-[0_0_8px_rgba(255,215,0,0.6)]" 
                           : isEvenSegment 
                           ? "bg-red-800" 
                           : "bg-gray-800"
@@ -111,26 +152,57 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
               </div>
             );
           })}
+
+          {/* Add decorative dot pattern for texture */}
+          {Array.from({ length: 24 }).map((_, i) => {
+            const angle = (i / 24) * 360;
+            const radian = (angle * Math.PI) / 180;
+            const radius = 35; // Percentage from center
+            const x = 50 + radius * Math.cos(radian);
+            const y = 50 + radius * Math.sin(radian);
+            
+            return (
+              <div 
+                key={`dot-${i}`} 
+                className="absolute w-1.5 h-1.5 rounded-full bg-amber-900"
+                style={{
+                  left: `${x}%`,
+                  top: `${y}%`,
+                  transform: "translate(-50%, -50%)",
+                  boxShadow: "inset 0 0 2px rgba(255, 255, 255, 0.3)"
+                }}
+              ></div>
+            );
+          })}
         </motion.div>
 
-        {/* Center cap */}
+        {/* Center cap with enhanced 3D effect */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-gradient-to-r from-amber-700 to-amber-800 flex items-center justify-center z-10 shadow-[inset_0_2px_4px_rgba(255,255,255,0.3),0_5px_10px_rgba(0,0,0,0.7)]">
-          <div className="w-14 h-14 rounded-full bg-amber-950 flex items-center justify-center border-2 border-amber-800 shadow-[inset_0_0_8px_rgba(0,0,0,0.8)]">
-            <Trophy className="h-8 w-8 text-amber-400" />
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-950 to-amber-900 flex items-center justify-center border-2 border-amber-800 shadow-[inset_0_0_8px_rgba(0,0,0,0.8)]">
+            <Trophy className="h-8 w-8 text-amber-400 drop-shadow-[0_0_2px_rgba(255,215,0,0.6)]" />
           </div>
         </div>
       </div>
 
-      {/* Metal ball track */}
+      {/* Metal ball track with enhanced reflection */}
       <div 
         className="absolute inset-[10px] rounded-full pointer-events-none"
         style={{ 
           background: "linear-gradient(135deg, #d4af37 0%, #f9e076 50%, #d4af37 100%)",
           boxShadow: "inset 0 0 10px rgba(0, 0, 0, 0.3)"
         }}
-      ></div>
+      >
+        {/* Add metallic reflection effect */}
+        <div 
+          className="absolute inset-0 rounded-full" 
+          style={{
+            background: "linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.3) 50%, transparent 60%)",
+            boxShadow: "inset 0 0 20px rgba(0, 0, 0, 0.2)"
+          }}
+        ></div>
+      </div>
 
-      {/* Casino-style number pegs */}
+      {/* Casino-style number pegs with enhanced 3D effect */}
       <div className="absolute inset-0 -m-2 rounded-full pointer-events-none">
         {Array.from({ length: 28 }).map((_, i) => {
           const angle = (i / 28) * 360;
@@ -146,7 +218,7 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
                 left: `calc(50% + ${x}%)`,
                 top: `calc(50% + ${y}%)`,
                 background: "radial-gradient(circle at 30% 30%, #f9e076, #d4af37)",
-                boxShadow: "0 0 2px rgba(0,0,0,0.5)",
+                boxShadow: "0 0 3px rgba(0,0,0,0.5), inset 0 0 1px rgba(255,255,255,0.8)",
                 animationDelay: `${i * 0.1}s`,
               }}
             ></div>
