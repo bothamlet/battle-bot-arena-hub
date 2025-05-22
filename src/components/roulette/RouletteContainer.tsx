@@ -58,11 +58,16 @@ const RouletteContainer: React.FC = () => {
     // Calculate the rotation so that we land on the winning segment.
     const segmentAngle = 360 / rouletteParts.length;
     const extraSpins = 8; // Dramatic effect with extra spins.
+    
+    // Calculate rotation to make pointer point to the winning segment
+    // We need to adjust by segmentAngle/2 to align with the center of the segment
+    const targetRotation = 360 - (winningIndex * segmentAngle + segmentAngle / 2);
+    
+    // Add extra full rotations for dramatic effect
+    const totalRotation = targetRotation + extraSpins * 360;
 
-    // IMPORTANT: Use the updater so that rotationAngle accumulates.
-    setRotationAngle((prevAngle) => 
-      prevAngle + extraSpins * 360 + winningIndex * segmentAngle
-    );
+    // IMPORTANT: Use the updater to set absolute rotation, not relative
+    setRotationAngle(totalRotation);
 
     // The spin duration matches the animation duration in RouletteWheel.
     const spinDuration = 12000; // 12 seconds.

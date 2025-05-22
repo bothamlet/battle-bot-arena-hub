@@ -52,10 +52,12 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
           boxShadow: "inset 0 0 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5)"
         }}
       >
-        {/* The animated wheel that rotates */}
+        {/* The animated wheel that rotates - USE THIS FOR ACTUAL SPIN ANIMATION */}
         <motion.div 
           className="w-full h-full relative"
-          animate={{ rotate: rotationAngle }}
+          animate={{ 
+            rotate: rotationAngle,
+          }}
           initial={{ rotate: 0 }}
           transition={{ 
             duration: spinning ? 12 : 0, 
@@ -63,10 +65,26 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
             type: "tween"
           }}
         >
+          {/* Segment container */}
           {rouletteParts.map((part, index) => {
             // For each segment, calculate its starting angle and determine fill color.
             const startAngle = index * segmentAngle;
             const isEvenSegment = index % 2 === 0;
+            
+            // Enhanced background colors based on rarity
+            let bgColor = isEvenSegment ? "#8B0000" : "#000000";
+            let highlightColor = isEvenSegment ? 'rgba(200, 0, 0, 0.8)' : 'rgba(40, 40, 40, 0.8)';
+            
+            if (part.rarity === "legendary") {
+              bgColor = "#FFD700";
+              highlightColor = 'rgba(255, 215, 0, 0.8)';
+            } else if (part.rarity === "epic") {
+              bgColor = "#9370DB";
+              highlightColor = 'rgba(147, 112, 219, 0.8)';
+            } else if (part.rarity === "rare") {
+              bgColor = isEvenSegment ? "#4169E1" : "#000080";
+              highlightColor = isEvenSegment ? 'rgba(65, 105, 225, 0.8)' : 'rgba(0, 0, 128, 0.8)';
+            }
 
             return (
               <div 
@@ -82,11 +100,9 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
                   className="absolute inset-0"
                   style={{
                     clipPath: `polygon(50% 50%, ${getPolygonPoints(segmentAngle)})`,
-                    backgroundColor: isEvenSegment ? "#8B0000" : "#000000",
+                    backgroundColor: bgColor,
                     transform: "scale(0.98)", // Create a tiny gap between segments
-                    boxShadow: isEvenSegment 
-                      ? "inset 0 0 15px rgba(255, 255, 255, 0.1)" 
-                      : "inset 0 0 15px rgba(255, 255, 255, 0.05)",
+                    boxShadow: "inset 0 0 15px rgba(255, 255, 255, 0.1)",
                   }}
                 >
                   {/* Radial highlight to create depth effect */}
@@ -95,8 +111,8 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
                     style={{
                       background: `radial-gradient(
                         circle at 50% 50%,
-                        ${isEvenSegment ? 'rgba(200, 0, 0, 0.8)' : 'rgba(40, 40, 40, 0.8)'} 0%,
-                        ${isEvenSegment ? '#8B0000' : '#000000'} 70%
+                        ${highlightColor} 0%,
+                        ${bgColor} 70%
                       )`,
                       clipPath: `polygon(50% 50%, ${getPolygonPoints(segmentAngle)})`,
                     }}
@@ -104,7 +120,7 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
 
                   {/* Segment divider lines */}
                   <div 
-                    className="absolute h-1/2 w-[2px] bg-amber-900 left-1/2 top-0"
+                    className="absolute h-1/2 w-[3px] bg-amber-900 left-1/2 top-0"
                     style={{
                       transform: "translateX(-50%)",
                       boxShadow: "0 0 3px rgba(0,0,0,0.5)"
@@ -120,7 +136,7 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
                       width: "50%",
                       height: "50%",
                       background: `linear-gradient(${startAngle + segmentAngle/2}deg, 
-                        rgba(255, 255, 255, 0.1) 0%, 
+                        rgba(255, 255, 255, 0.3) 0%, 
                         rgba(255, 255, 255, 0) 60%)`,
                       transformOrigin: "0% 100%",
                       transform: "rotate(0deg)"
@@ -140,14 +156,18 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
                   >
                     <div className={`inline-block ${
                         part.rarity === "legendary" 
-                          ? "bg-yellow-600 shadow-[0_0_8px_rgba(255,215,0,0.6)]" 
+                          ? "bg-yellow-600 shadow-[0_0_12px_rgba(255,215,0,0.8)]" 
+                          : part.rarity === "epic"
+                          ? "bg-purple-700 shadow-[0_0_8px_rgba(147,112,219,0.7)]"
+                          : part.rarity === "rare"
+                          ? "bg-blue-700 shadow-[0_0_8px_rgba(65,105,225,0.7)]"
                           : isEvenSegment 
                           ? "bg-red-800" 
                           : "bg-gray-800"
                       } p-2 rounded-full shadow-md`}>
                       {part.icon}
                     </div>
-                    <p className="text-white text-md mt-1 font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] text-center">
+                    <p className="text-white text-md mt-1 font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,1)] text-center">
                       {part.name}
                     </p>
                   </div>
@@ -238,6 +258,11 @@ const RouletteWheel: React.FC<RouletteWheelProps> = ({ spinning, rotationAngle }
           mixBlendMode: "multiply",
         }}
       ></div>
+
+      {/* Spinning indicator animation */}
+      {spinning && (
+        <div className="absolute inset-0 rounded-full pointer-events-none bg-white/5 animate-pulse"></div>
+      )}
     </div>
   );
 };
