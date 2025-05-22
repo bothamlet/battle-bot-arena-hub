@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Trophy, Users, Star } from "lucide-react";
+import { Trophy, Users, Star, DollarSign } from "lucide-react";
 
 const Header: React.FC = () => {
   return (
@@ -29,6 +29,10 @@ const Header: React.FC = () => {
             </Link>
             <Link to="/rules" className="battle-nav-link">
               Rules
+            </Link>
+            <Link to="/gamble" className="battle-nav-link flex items-center">
+              <DollarSign size={18} className="mr-1" />
+              Gamble
             </Link>
           </nav>
           
