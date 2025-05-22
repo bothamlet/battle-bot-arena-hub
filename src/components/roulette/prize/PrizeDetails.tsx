@@ -1,14 +1,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-
-// Define the RoulettePart type directly here
-interface RoulettePart {
-  name: string;
-  rarity: "common" | "uncommon" | "rare" | "epic" | "legendary";
-  description: string;
-  icon: React.ReactNode;
-}
+import { RoulettePart } from "../RouletteTypes";
 
 interface PrizeDetailsProps {
   result: RoulettePart;
