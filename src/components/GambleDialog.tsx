@@ -8,7 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import RouletteContainer from "./roulette/RouletteContainer";
 
 const GambleDialog = () => {
   return (
@@ -20,10 +19,14 @@ const GambleDialog = () => {
         <DialogHeader>
           <DialogTitle className="text-amber-300">Battle Parts Gamble</DialogTitle>
           <DialogDescription className="text-amber-200/80">
-            Spin the wheel to win robot parts for your next battle!
+            Visit the Betting page to place bets on robot battles!
           </DialogDescription>
         </DialogHeader>
-        <RouletteContainer />
+        <div className="flex justify-center p-6">
+          <a href="/betting" className="bg-amber-700 text-amber-100 hover:bg-amber-600 font-bold text-xl px-8 py-6 rounded-lg shadow-lg transform transition-transform hover:scale-105">
+            Go to Betting Page
+          </a>
+        </div>
       </DialogContent>
     </Dialog>
   );
