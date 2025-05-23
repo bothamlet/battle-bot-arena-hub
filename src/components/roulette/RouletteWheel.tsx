@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { RotateCw, DollarSign } from "lucide-react";
+import { RotateCw, DollarSign, Bot, Cog, Wrench, Zap, Shield, Cpu } from "lucide-react";
 import { motion, useAnimation } from "framer-motion";
 
 interface RouletteSegment {
