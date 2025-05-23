@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
@@ -8,11 +7,13 @@ import PrizeDetails from "./prize/PrizeDetails";
 import PrizeIcon from "./prize/PrizeIcon";
 import ConfettiEffect from "./effects/ConfettiEffect";
 import SparkleEffect from "./effects/SparkleEffect";
+import FireworksEffect from "./effects/FireworksEffect";
 
 const RouletteWheel: React.FC = () => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState<RoulettePart | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [showFireworks, setShowFireworks] = useState(false);
   const controls = useAnimation();
   const spinDuration = 5;
 
@@ -62,6 +63,7 @@ const RouletteWheel: React.FC = () => {
     setIsSpinning(true);
     setResult(null);
     setShowCelebration(false);
+    setShowFireworks(false);
     
     const randomResult = getRandomResult();
     const extraRotations = 5;
@@ -82,10 +84,18 @@ const RouletteWheel: React.FC = () => {
     setResult(randomResult);
     setIsSpinning(false);
     
+    // Show fireworks for any win
+    setShowFireworks(true);
+    
     const isRare = randomResult.rarity === "epic" || randomResult.rarity === "legendary";
     if (isRare) {
       setShowCelebration(true);
     }
+
+    // Hide fireworks after 4 seconds
+    setTimeout(() => {
+      setShowFireworks(false);
+    }, 4000);
   };
 
   const isRare = result && (result.rarity === "epic" || result.rarity === "legendary");
@@ -93,6 +103,7 @@ const RouletteWheel: React.FC = () => {
   return (
     <div className="flex flex-col items-center space-y-6 relative">
       <ConfettiEffect show={showCelebration} />
+      <FireworksEffect show={showFireworks} />
       
       <div className="relative w-80 h-80 sm:w-96 sm:h-96">
         <SparkleEffect show={showCelebration} isRare={!!isRare} />
