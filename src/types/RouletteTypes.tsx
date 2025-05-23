@@ -103,5 +103,5 @@ export const robotParts: RoulettePart[] = [
     rarity: "legendary", 
     description: "Unlimited power source", 
     icon: <Zap className="text-white" size={24} /> 
-  },
+  }
 ];
