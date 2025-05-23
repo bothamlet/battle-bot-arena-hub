@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
@@ -9,15 +8,19 @@ import PrizeIcon from "./prize/PrizeIcon";
 import ConfettiEffect from "./effects/ConfettiEffect";
 import SparkleEffect from "./effects/SparkleEffect";
 import FireworksEffect from "./effects/FireworksEffect";
+import WinAnnouncement from "./effects/WinAnnouncement";
 
 const RouletteWheel: React.FC = () => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState<RoulettePart | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showFireworks, setShowFireworks] = useState(false);
-  const [rotationAngle, setRotationAngle] = useState(0); // Track current rotation angle
+  const [showWinAnnouncement, setShowWinAnnouncement] = useState(false);
+  const [rotationAngle, setRotationAngle] = useState(0);
+  const [isSlowingDown, setIsSlowingDown] = useState(false);
   const controls = useAnimation();
-  const spinDuration = 5;
+  const spinDuration = 4; // Slightly faster base spin
+  const slowDownDuration = 2; // Suspenseful slowdown phase
 
   // Create roulette segments with weighted probability
   const segments: RouletteSegment[] = [
@@ -66,40 +69,61 @@ const RouletteWheel: React.FC = () => {
     setResult(null);
     setShowCelebration(false);
     setShowFireworks(false);
+    setShowWinAnnouncement(false);
+    setIsSlowingDown(false);
     
     const randomResult = getRandomResult();
-    const extraRotations = 5;
+    const extraRotations = 8; // More rotations for drama
     const segmentAngle = 360 / segments.length;
     const resultPosition = Math.floor(Math.random() * segments.length);
     const resultAngle = resultPosition * segmentAngle;
     
     // Calculate new rotation angle relative to the current position
-    const newRotationAngle = rotationAngle + (extraRotations * 360) + resultAngle + (Math.random() * (segmentAngle * 0.5));
+    const newRotationAngle = rotationAngle + (extraRotations * 360) + resultAngle + (Math.random() * (segmentAngle * 0.3));
     setRotationAngle(newRotationAngle);
     
-    // Animate to the new absolute rotation
+    // First phase: Fast spinning
     await controls.start({
-      rotate: newRotationAngle,
+      rotate: newRotationAngle - 180, // Stop just before the result
       transition: { 
         duration: spinDuration,
         ease: "easeOut",
       }
     });
     
+    // Suspenseful slowdown phase
+    setIsSlowingDown(true);
+    await controls.start({
+      rotate: newRotationAngle,
+      transition: { 
+        duration: slowDownDuration,
+        ease: [0.25, 0.46, 0.45, 0.94], // Custom easing for dramatic effect
+      }
+    });
+    
     setResult(randomResult);
     setIsSpinning(false);
+    setIsSlowingDown(false);
     
-    // Show fireworks for any win
-    setShowFireworks(true);
+    // Show win announcement first
+    setShowWinAnnouncement(true);
+    
+    // Then show fireworks
+    setTimeout(() => {
+      setShowFireworks(true);
+    }, 500);
     
     const isRare = randomResult.rarity === "epic" || randomResult.rarity === "legendary";
     if (isRare) {
-      setShowCelebration(true);
+      setTimeout(() => {
+        setShowCelebration(true);
+      }, 800);
     }
 
-    // Hide fireworks after 8 seconds
+    // Hide effects after duration
     setTimeout(() => {
       setShowFireworks(false);
+      setShowWinAnnouncement(false);
     }, 8000);
   };
 
@@ -109,15 +133,28 @@ const RouletteWheel: React.FC = () => {
     <div className="flex flex-col items-center space-y-6 relative">
       <ConfettiEffect show={showCelebration} />
       <FireworksEffect show={showFireworks} />
+      <WinAnnouncement show={showWinAnnouncement} result={result} />
       
       <div className="relative w-80 h-80 sm:w-96 sm:h-96">
         <SparkleEffect show={showCelebration} isRare={!!isRare} />
         
+        {/* Enhanced pointer with glow effect */}
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-5 z-10">
-          <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-amber-500"></div>
+          <div 
+            className={`w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-amber-500 transition-all duration-300 ${
+              isSlowingDown ? 'filter drop-shadow-[0_0_8px_rgba(245,158,11,0.8)] scale-110' : ''
+            }`}
+          ></div>
         </div>
         
-        <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-amber-500 shadow-xl">
+        {/* Enhanced wheel with dynamic border */}
+        <div 
+          className={`relative w-full h-full rounded-full overflow-hidden transition-all duration-500 ${
+            isSpinning 
+              ? 'border-4 border-amber-400 shadow-2xl shadow-amber-400/50' 
+              : 'border-4 border-amber-500 shadow-xl'
+          }`}
+        >
           <motion.div 
             className="absolute w-full h-full"
             animate={controls}
@@ -129,13 +166,17 @@ const RouletteWheel: React.FC = () => {
               return (
                 <div
                   key={segment.id}
-                  className={`absolute w-full h-full ${segment.color}`}
+                  className={`absolute w-full h-full ${segment.color} transition-all duration-300 ${
+                    isSlowingDown ? 'brightness-110' : ''
+                  }`}
                   style={{
                     clipPath: `polygon(50% 50%, ${50 + 50 * Math.cos((angle - 360 / segments.length / 2) * Math.PI / 180)}% ${50 + 50 * Math.sin((angle - 360 / segments.length / 2) * Math.PI / 180)}%, ${50 + 50 * Math.cos((angle + 360 / segments.length / 2) * Math.PI / 180)}% ${50 + 50 * Math.sin((angle + 360 / segments.length / 2) * Math.PI / 180)}%)`,
                   }}
                 >
                   <div
-                    className="absolute text-white font-bold text-xs flex items-center justify-center"
+                    className={`absolute text-white font-bold text-xs flex items-center justify-center transition-all duration-300 ${
+                      isSlowingDown ? 'scale-110' : ''
+                    }`}
                     style={{
                       left: `${50 + 35 * Math.cos(angle * Math.PI / 180)}%`,
                       top: `${50 + 35 * Math.sin(angle * Math.PI / 180)}%`,
@@ -150,22 +191,40 @@ const RouletteWheel: React.FC = () => {
               );
             })}
             
-            <div className="absolute top-1/2 left-1/2 w-8 h-8 bg-amber-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 border-2 border-amber-700"></div>
+            {/* Enhanced center hub */}
+            <div 
+              className={`absolute top-1/2 left-1/2 w-8 h-8 bg-amber-500 rounded-full transform -translate-x-1/2 -translate-y-1/2 border-2 border-amber-700 transition-all duration-300 ${
+                isSpinning ? 'shadow-lg shadow-amber-400/60 scale-110' : ''
+              }`}
+            ></div>
           </motion.div>
         </div>
       </div>
       
       <div className="flex flex-col items-center gap-4">
-        <Button
-          onClick={spinWheel}
-          disabled={isSpinning}
-          className="bg-amber-500 hover:bg-amber-600 text-black font-bold py-3 px-6 rounded-full shadow-lg flex items-center gap-2 text-lg"
+        {/* Enhanced spin button */}
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
-          <RotateCw className={isSpinning ? "animate-spin" : ""} />
-          {isSpinning ? "Spinning..." : "Spin Wheel"}
-        </Button>
+          <Button
+            onClick={spinWheel}
+            disabled={isSpinning}
+            className={`bg-amber-500 hover:bg-amber-600 text-black font-bold py-4 px-8 rounded-full shadow-lg flex items-center gap-2 text-xl transition-all duration-300 ${
+              isSpinning 
+                ? 'animate-pulse shadow-amber-400/60 shadow-xl' 
+                : 'hover:shadow-amber-400/40 hover:shadow-xl'
+            }`}
+          >
+            <RotateCw 
+              className={`${isSpinning ? "animate-spin" : ""} transition-all duration-300`} 
+              size={24}
+            />
+            {isSpinning ? (isSlowingDown ? "Almost there..." : "Spinning...") : "Spin Wheel"}
+          </Button>
+        </motion.div>
         
-        {result && (
+        {result && !showWinAnnouncement && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
