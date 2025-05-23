@@ -24,8 +24,8 @@ const FireworksEffect: React.FC<FireworksEffectProps> = ({ show }) => {
       const types: ("burst" | "fountain" | "sparkle")[] = ["burst", "fountain", "sparkle"];
       const colors: ("red" | "blue" | "gold")[] = ["red", "blue", "gold"];
 
-      // Create 15 fireworks with random positions and types
-      for (let i = 0; i < 15; i++) {
+      // Create 20 fireworks with random positions and types
+      for (let i = 0; i < 20; i++) {
         newFireworks.push({
           id: i,
           x: Math.random() * 100,
@@ -43,19 +43,31 @@ const FireworksEffect: React.FC<FireworksEffectProps> = ({ show }) => {
 
   if (!show) return null;
 
-  const getColorClass = (color: "red" | "blue" | "gold") => {
+  const getColorClasses = (color: "red" | "blue" | "gold") => {
     switch (color) {
       case "red":
-        return "bg-red-500";
+        return {
+          fill: "bg-red-500 border-red-300",
+          shadow: "shadow-red-500/50",
+          glow: "shadow-lg shadow-red-400/80"
+        };
       case "blue":
-        return "bg-blue-500";
+        return {
+          fill: "bg-blue-500 border-blue-300",
+          shadow: "shadow-blue-500/50",
+          glow: "shadow-lg shadow-blue-400/80"
+        };
       case "gold":
-        return "bg-yellow-400";
+        return {
+          fill: "bg-yellow-400 border-yellow-200",
+          shadow: "shadow-yellow-400/50",
+          glow: "shadow-lg shadow-yellow-300/80"
+        };
     }
   };
 
   const renderFirework = (firework: Firework) => {
-    const colorClass = getColorClass(firework.color);
+    const colorClasses = getColorClasses(firework.color);
     
     if (firework.type === "burst") {
       // Burst firework - particles explode outward
@@ -65,19 +77,19 @@ const FireworksEffect: React.FC<FireworksEffectProps> = ({ show }) => {
           className="absolute"
           style={{ left: `${firework.x}%`, top: `${firework.y}%` }}
         >
-          {[...Array(12)].map((_, i) => (
+          {[...Array(16)].map((_, i) => (
             <motion.div
               key={i}
-              className={`absolute w-2 h-2 rounded-full ${colorClass}`}
+              className={`absolute w-3 h-3 rounded-full border-2 ${colorClasses.fill} ${colorClasses.glow}`}
               initial={{ scale: 0, x: 0, y: 0, opacity: 1 }}
               animate={{
-                scale: [0, 1, 0],
-                x: Math.cos(i * (Math.PI / 6)) * 100,
-                y: Math.sin(i * (Math.PI / 6)) * 100,
-                opacity: [1, 1, 0],
+                scale: [0, 1.5, 1, 0],
+                x: Math.cos(i * (Math.PI / 8)) * 120,
+                y: Math.sin(i * (Math.PI / 8)) * 120,
+                opacity: [1, 1, 0.8, 0],
               }}
               transition={{
-                duration: 2,
+                duration: 4,
                 delay: firework.delay,
                 ease: "easeOut",
               }}
@@ -95,20 +107,20 @@ const FireworksEffect: React.FC<FireworksEffectProps> = ({ show }) => {
           className="absolute"
           style={{ left: `${firework.x}%`, top: `${firework.y}%` }}
         >
-          {[...Array(8)].map((_, i) => (
+          {[...Array(12)].map((_, i) => (
             <motion.div
               key={i}
-              className={`absolute w-1 h-3 rounded-full ${colorClass}`}
+              className={`absolute w-2 h-4 rounded-full border ${colorClasses.fill} ${colorClasses.glow}`}
               initial={{ scale: 0, x: 0, y: 0, opacity: 1 }}
               animate={{
-                scale: [0, 1, 0.5],
-                x: (Math.random() - 0.5) * 60,
-                y: Math.random() * 150 + 50,
-                opacity: [1, 1, 0],
+                scale: [0, 1.2, 0.8, 0.3],
+                x: (Math.random() - 0.5) * 80,
+                y: Math.random() * 200 + 80,
+                opacity: [1, 1, 0.7, 0],
               }}
               transition={{
-                duration: 3,
-                delay: firework.delay + i * 0.1,
+                duration: 5,
+                delay: firework.delay + i * 0.15,
                 ease: "easeOut",
               }}
             />
@@ -124,24 +136,24 @@ const FireworksEffect: React.FC<FireworksEffectProps> = ({ show }) => {
         className="absolute"
         style={{ left: `${firework.x}%`, top: `${firework.y}%` }}
       >
-        {[...Array(6)].map((_, i) => (
+        {[...Array(10)].map((_, i) => (
           <motion.div
             key={i}
-            className={`absolute w-1 h-1 rounded-full ${colorClass}`}
+            className={`absolute w-2 h-2 rounded-full border ${colorClasses.fill} ${colorClasses.glow}`}
             initial={{ scale: 0, opacity: 0 }}
             animate={{
-              scale: [0, 1.5, 1, 1.5, 0],
-              opacity: [0, 1, 0.5, 1, 0],
+              scale: [0, 2, 1.5, 2, 0.5, 0],
+              opacity: [0, 1, 0.6, 1, 0.4, 0],
             }}
             transition={{
-              duration: 2.5,
-              delay: firework.delay + i * 0.2,
-              repeat: 2,
+              duration: 4.5,
+              delay: firework.delay + i * 0.25,
+              repeat: 1,
               ease: "easeInOut",
             }}
             style={{
-              left: `${(Math.random() - 0.5) * 40}px`,
-              top: `${(Math.random() - 0.5) * 40}px`,
+              left: `${(Math.random() - 0.5) * 50}px`,
+              top: `${(Math.random() - 0.5) * 50}px`,
             }}
           />
         ))}

@@ -92,10 +92,10 @@ const RouletteWheel: React.FC = () => {
       setShowCelebration(true);
     }
 
-    // Hide fireworks after 4 seconds
+    // Hide fireworks after 8 seconds (increased from 4)
     setTimeout(() => {
       setShowFireworks(false);
-    }, 4000);
+    }, 8000);
   };
 
   const isRare = result && (result.rarity === "epic" || result.rarity === "legendary");
