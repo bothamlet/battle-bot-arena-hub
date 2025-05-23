@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
@@ -14,6 +15,7 @@ const RouletteWheel: React.FC = () => {
   const [result, setResult] = useState<RoulettePart | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showFireworks, setShowFireworks] = useState(false);
+  const [rotationAngle, setRotationAngle] = useState(0); // Track current rotation angle
   const controls = useAnimation();
   const spinDuration = 5;
 
@@ -71,10 +73,13 @@ const RouletteWheel: React.FC = () => {
     const resultPosition = Math.floor(Math.random() * segments.length);
     const resultAngle = resultPosition * segmentAngle;
     
-    const finalRotation = (extraRotations * 360) + resultAngle + (Math.random() * (segmentAngle * 0.5));
+    // Calculate new rotation angle relative to the current position
+    const newRotationAngle = rotationAngle + (extraRotations * 360) + resultAngle + (Math.random() * (segmentAngle * 0.5));
+    setRotationAngle(newRotationAngle);
     
+    // Animate to the new absolute rotation
     await controls.start({
-      rotate: finalRotation,
+      rotate: newRotationAngle,
       transition: { 
         duration: spinDuration,
         ease: "easeOut",
@@ -92,7 +97,7 @@ const RouletteWheel: React.FC = () => {
       setShowCelebration(true);
     }
 
-    // Hide fireworks after 8 seconds (increased from 4)
+    // Hide fireworks after 8 seconds
     setTimeout(() => {
       setShowFireworks(false);
     }, 8000);
@@ -116,6 +121,7 @@ const RouletteWheel: React.FC = () => {
           <motion.div 
             className="absolute w-full h-full"
             animate={controls}
+            initial={{ rotate: rotationAngle }}
             style={{ originX: 0.5, originY: 0.5 }}
           >
             {segments.map((segment, index) => {
