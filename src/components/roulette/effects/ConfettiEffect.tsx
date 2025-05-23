@@ -8,7 +8,6 @@ interface ConfettiEffectProps {
 const ConfettiEffect: React.FC<ConfettiEffectProps> = ({ show }) => {
   if (!show) return null;
 
-  // Precompute a stable confetti array so animations won't jitter with re-randomization.
   const confettiItems = useMemo(() => {
     return Array.from({ length: 50 }).map((_, i) => ({
       id: i,

@@ -2,14 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
-
-// Define the RoulettePart type directly here
-interface RoulettePart {
-  name: string;
-  rarity: "common" | "uncommon" | "rare" | "epic" | "legendary";
-  description: string;
-  icon: React.ReactNode;
-}
+import { RoulettePart } from "@/types/RouletteTypes";
 
 interface PrizeIconProps {
   result: RoulettePart;
@@ -18,7 +11,6 @@ interface PrizeIconProps {
 }
 
 const PrizeIcon: React.FC<PrizeIconProps> = ({ result, isRare, showCelebration }) => {
-  // Compute background and shadow classes
   const iconBgClass = isRare
     ? "bg-gradient-to-r from-amber-400 to-amber-300"
     : result.rarity === "rare"
@@ -44,7 +36,6 @@ const PrizeIcon: React.FC<PrizeIconProps> = ({ result, isRare, showCelebration }
       >
         {result.icon}
         
-        {/* Sparkle effect around icon for rare/legendary items */}
         {isRare && showCelebration && (
           <>
             {[...Array(8)].map((_, i) => (
