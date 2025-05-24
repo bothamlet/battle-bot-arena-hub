@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Bot, Cog, Wrench, Zap, Shield, Cpu } from "lucide-react";
 
@@ -12,8 +13,6 @@ export interface RouletteSegment {
   id: number;
   color: string;
   part: RoulettePart;
-  startAngle: number;
-  width: number;
 }
 
 // Define the robot parts with their respective properties
