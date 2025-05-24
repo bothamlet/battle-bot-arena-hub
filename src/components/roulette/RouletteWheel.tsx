@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
@@ -19,8 +20,6 @@ const RouletteWheel: React.FC = () => {
   const [rotationAngle, setRotationAngle] = useState(0);
   const [isSlowingDown, setIsSlowingDown] = useState(false);
   const controls = useAnimation();
-  const spinDuration = 4; // Slightly faster base spin
-  const slowDownDuration = 2; // Suspenseful slowdown phase
 
   // Create roulette segments with weighted probability
   const segments: RouletteSegment[] = [
@@ -82,22 +81,20 @@ const RouletteWheel: React.FC = () => {
     const newRotationAngle = rotationAngle + (extraRotations * 360) + resultAngle + (Math.random() * (segmentAngle * 0.3));
     setRotationAngle(newRotationAngle);
     
-    // First phase: Fast spinning
-    await controls.start({
-      rotate: newRotationAngle - 180, // Stop just before the result
-      transition: { 
-        duration: spinDuration,
-        ease: "easeOut",
-      }
-    });
+    // Trigger slowdown effect at 75% of the animation
+    const totalDuration = 6; // Total spin duration
+    const slowdownTrigger = totalDuration * 0.75; // When to start slowdown visuals
     
-    // Suspenseful slowdown phase
-    setIsSlowingDown(true);
+    setTimeout(() => {
+      setIsSlowingDown(true);
+    }, slowdownTrigger * 1000);
+    
+    // Single continuous spin with custom easing for dramatic slowdown
     await controls.start({
       rotate: newRotationAngle,
       transition: { 
-        duration: slowDownDuration,
-        ease: [0.25, 0.46, 0.45, 0.94], // Custom easing for dramatic effect
+        duration: totalDuration,
+        ease: [0.25, 0.1, 0.25, 1], // Custom cubic-bezier for smooth deceleration
       }
     });
     
