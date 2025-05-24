@@ -21,44 +21,58 @@ const RouletteWheel: React.FC = () => {
   const [isSlowingDown, setIsSlowingDown] = useState(false);
   const controls = useAnimation();
 
-  // Create roulette segments with weighted probability
-  const segments: RouletteSegment[] = [
-    { id: 1, color: "bg-red-600", part: robotParts[0] },
-    { id: 2, color: "bg-black", part: robotParts[1] },
-    { id: 3, color: "bg-red-600", part: robotParts[2] },
-    { id: 4, color: "bg-black", part: robotParts[3] },
-    { id: 5, color: "bg-red-600", part: robotParts[4] },
-    { id: 6, color: "bg-black", part: robotParts[5] },
-    { id: 7, color: "bg-red-600", part: robotParts[6] },
-    { id: 8, color: "bg-black", part: robotParts[7] },
-    { id: 9, color: "bg-red-600", part: robotParts[8] },
-    { id: 10, color: "bg-black", part: robotParts[9] },
-    { id: 11, color: "bg-red-600", part: robotParts[10] },
-    { id: 12, color: "bg-black", part: robotParts[11] },
-  ];
+  // Define rarity colors and segment distribution
+  const rarityConfig = {
+    common: { color: "bg-gray-600", segments: 24, probability: 60 }, // 60%
+    uncommon: { color: "bg-green-600", segments: 10, probability: 25 }, // 25%
+    rare: { color: "bg-blue-600", segments: 4, probability: 10 }, // 10%
+    epic: { color: "bg-purple-600", segments: 2, probability: 4 }, // 4%
+    legendary: { color: "bg-orange-500", segments: 1, probability: 1 } // 1%
+  };
+
+  // Create segments based on rarity distribution
+  const createSegments = () => {
+    const segments: Array<{ id: number; color: string; rarity: string; angle: number }> = [];
+    let segmentId = 1;
+    
+    Object.entries(rarityConfig).forEach(([rarity, config]) => {
+      const segmentAngle = 360 / 41; // Total 41 segments
+      const segmentWidth = config.segments;
+      
+      for (let i = 0; i < segmentWidth; i++) {
+        segments.push({
+          id: segmentId++,
+          color: config.color,
+          rarity,
+          angle: segmentAngle
+        });
+      }
+    });
+    
+    return segments;
+  };
+
+  const segments = createSegments();
 
   const getRandomResult = (): RoulettePart => {
     const rand = Math.random() * 100;
+    let selectedRarity: string;
     
     if (rand < 1) {
-      // 1% legendary
-      return robotParts.find(part => part.rarity === "legendary") || robotParts[0];
+      selectedRarity = "legendary";
     } else if (rand < 5) {
-      // 4% epic
-      return robotParts.find(part => part.rarity === "epic") || robotParts[0];
+      selectedRarity = "epic";
     } else if (rand < 15) {
-      // 10% rare
-      const rareParts = robotParts.filter(part => part.rarity === "rare");
-      return rareParts[Math.floor(Math.random() * rareParts.length)];
+      selectedRarity = "rare";
     } else if (rand < 40) {
-      // 25% uncommon
-      const uncommonParts = robotParts.filter(part => part.rarity === "uncommon");
-      return uncommonParts[Math.floor(Math.random() * uncommonParts.length)];
+      selectedRarity = "uncommon";
     } else {
-      // 60% common
-      const commonParts = robotParts.filter(part => part.rarity === "common");
-      return commonParts[Math.floor(Math.random() * commonParts.length)];
+      selectedRarity = "common";
     }
+
+    // Get a random part from the selected rarity
+    const partsOfRarity = robotParts.filter(part => part.rarity === selectedRarity);
+    return partsOfRarity[Math.floor(Math.random() * partsOfRarity.length)];
   };
 
   const spinWheel = async () => {
@@ -72,29 +86,33 @@ const RouletteWheel: React.FC = () => {
     setIsSlowingDown(false);
     
     const randomResult = getRandomResult();
-    const extraRotations = 8; // More rotations for drama
+    const extraRotations = 10;
     const segmentAngle = 360 / segments.length;
-    const resultPosition = Math.floor(Math.random() * segments.length);
-    const resultAngle = resultPosition * segmentAngle;
     
-    // Calculate new rotation angle relative to the current position
-    const newRotationAngle = rotationAngle + (extraRotations * 360) + resultAngle + (Math.random() * (segmentAngle * 0.3));
+    // Find segments matching the result rarity
+    const matchingSegments = segments
+      .map((segment, index) => ({ segment, index }))
+      .filter(({ segment }) => segment.rarity === randomResult.rarity);
+    
+    // Pick a random matching segment
+    const selectedSegment = matchingSegments[Math.floor(Math.random() * matchingSegments.length)];
+    const resultAngle = selectedSegment.index * segmentAngle;
+    
+    const newRotationAngle = rotationAngle + (extraRotations * 360) + resultAngle + (Math.random() * (segmentAngle * 0.8));
     setRotationAngle(newRotationAngle);
     
-    // Trigger slowdown effect at 60% of the animation for longer suspense
-    const totalDuration = 7; // Increased total duration
-    const slowdownTrigger = totalDuration * 0.6; // Earlier slowdown trigger for longer suspense
+    const totalDuration = 8;
+    const slowdownTrigger = totalDuration * 0.6;
     
     setTimeout(() => {
       setIsSlowingDown(true);
     }, slowdownTrigger * 1000);
     
-    // Single continuous spin with optimized performance and longer suspense
     await controls.start({
       rotate: newRotationAngle,
       transition: { 
         duration: totalDuration,
-        ease: [0.25, 0.05, 0.15, 1], // Even more dramatic slowdown curve
+        ease: [0.25, 0.05, 0.15, 1],
       }
     });
     
@@ -102,10 +120,8 @@ const RouletteWheel: React.FC = () => {
     setIsSpinning(false);
     setIsSlowingDown(false);
     
-    // Show win announcement first
     setShowWinAnnouncement(true);
     
-    // Then show fireworks
     setTimeout(() => {
       setShowFireworks(true);
     }, 500);
@@ -117,7 +133,6 @@ const RouletteWheel: React.FC = () => {
       }, 800);
     }
 
-    // Hide effects after duration
     setTimeout(() => {
       setShowFireworks(false);
       setShowWinAnnouncement(false);
@@ -159,8 +174,8 @@ const RouletteWheel: React.FC = () => {
             style={{ 
               originX: 0.5, 
               originY: 0.5,
-              transform: `rotate(${rotationAngle}deg) translateZ(0)`, // Hardware acceleration
-              backfaceVisibility: 'hidden', // Performance optimization
+              transform: `rotate(${rotationAngle}deg) translateZ(0)`,
+              backfaceVisibility: 'hidden',
             }}
           >
             {segments.map((segment, index) => {
@@ -173,9 +188,10 @@ const RouletteWheel: React.FC = () => {
                   }`}
                   style={{
                     clipPath: `polygon(50% 50%, ${50 + 50 * Math.cos((angle - 360 / segments.length / 2) * Math.PI / 180)}% ${50 + 50 * Math.sin((angle - 360 / segments.length / 2) * Math.PI / 180)}%, ${50 + 50 * Math.cos((angle + 360 / segments.length / 2) * Math.PI / 180)}% ${50 + 50 * Math.sin((angle + 360 / segments.length / 2) * Math.PI / 180)}%)`,
-                    willChange: isSpinning ? 'transform' : 'auto', // Performance optimization
+                    willChange: isSpinning ? 'transform' : 'auto',
                   }}
                 >
+                  {/* Rarity indicator text */}
                   <div
                     className={`absolute text-white font-bold text-xs flex items-center justify-center transition-all duration-300 ${
                       isSlowingDown ? 'scale-110' : ''
@@ -188,7 +204,10 @@ const RouletteWheel: React.FC = () => {
                       height: '20px',
                     }}
                   >
-                    {segment.part.icon}
+                    {segment.rarity === 'legendary' ? '★' : 
+                     segment.rarity === 'epic' ? '◆' :
+                     segment.rarity === 'rare' ? '●' :
+                     segment.rarity === 'uncommon' ? '▲' : '■'}
                   </div>
                 </div>
               );
@@ -226,6 +245,30 @@ const RouletteWheel: React.FC = () => {
             {isSpinning ? (isSlowingDown ? "Almost there..." : "Spinning...") : "Spin Wheel"}
           </Button>
         </motion.div>
+        
+        {/* Rarity Legend */}
+        <div className="flex flex-wrap justify-center gap-2 text-sm">
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-gray-600 rounded"></div>
+            <span className="text-gray-300">Common (■)</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-green-600 rounded"></div>
+            <span className="text-green-300">Uncommon (▲)</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-blue-600 rounded"></div>
+            <span className="text-blue-300">Rare (●)</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-purple-600 rounded"></div>
+            <span className="text-purple-300">Epic (◆)</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-orange-500 rounded"></div>
+            <span className="text-orange-300">Legendary (★)</span>
+          </div>
+        </div>
         
         {result && !showWinAnnouncement && (
           <motion.div
