@@ -81,20 +81,20 @@ const RouletteWheel: React.FC = () => {
     const newRotationAngle = rotationAngle + (extraRotations * 360) + resultAngle + (Math.random() * (segmentAngle * 0.3));
     setRotationAngle(newRotationAngle);
     
-    // Trigger slowdown effect at 75% of the animation
-    const totalDuration = 6; // Total spin duration
-    const slowdownTrigger = totalDuration * 0.75; // When to start slowdown visuals
+    // Trigger slowdown effect at 60% of the animation for longer suspense
+    const totalDuration = 7; // Increased total duration
+    const slowdownTrigger = totalDuration * 0.6; // Earlier slowdown trigger for longer suspense
     
     setTimeout(() => {
       setIsSlowingDown(true);
     }, slowdownTrigger * 1000);
     
-    // Single continuous spin with custom easing for dramatic slowdown
+    // Single continuous spin with optimized performance and longer suspense
     await controls.start({
       rotate: newRotationAngle,
       transition: { 
         duration: totalDuration,
-        ease: [0.25, 0.1, 0.25, 1], // Custom cubic-bezier for smooth deceleration
+        ease: [0.25, 0.05, 0.15, 1], // Even more dramatic slowdown curve
       }
     });
     
@@ -144,7 +144,7 @@ const RouletteWheel: React.FC = () => {
           ></div>
         </div>
         
-        {/* Enhanced wheel with dynamic border */}
+        {/* Enhanced wheel with dynamic border and performance optimizations */}
         <div 
           className={`relative w-full h-full rounded-full overflow-hidden transition-all duration-500 ${
             isSpinning 
@@ -153,10 +153,15 @@ const RouletteWheel: React.FC = () => {
           }`}
         >
           <motion.div 
-            className="absolute w-full h-full"
+            className="absolute w-full h-full will-change-transform"
             animate={controls}
             initial={{ rotate: rotationAngle }}
-            style={{ originX: 0.5, originY: 0.5 }}
+            style={{ 
+              originX: 0.5, 
+              originY: 0.5,
+              transform: `rotate(${rotationAngle}deg) translateZ(0)`, // Hardware acceleration
+              backfaceVisibility: 'hidden', // Performance optimization
+            }}
           >
             {segments.map((segment, index) => {
               const angle = (index * 360) / segments.length;
@@ -168,6 +173,7 @@ const RouletteWheel: React.FC = () => {
                   }`}
                   style={{
                     clipPath: `polygon(50% 50%, ${50 + 50 * Math.cos((angle - 360 / segments.length / 2) * Math.PI / 180)}% ${50 + 50 * Math.sin((angle - 360 / segments.length / 2) * Math.PI / 180)}%, ${50 + 50 * Math.cos((angle + 360 / segments.length / 2) * Math.PI / 180)}% ${50 + 50 * Math.sin((angle + 360 / segments.length / 2) * Math.PI / 180)}%)`,
+                    willChange: isSpinning ? 'transform' : 'auto', // Performance optimization
                   }}
                 >
                   <div
