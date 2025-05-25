@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
@@ -31,7 +32,7 @@ const RouletteWheel: React.FC = () => {
 
   // Create segments based on rarity distribution and shuffle them randomly - memoized to prevent re-creation
   const segments = useMemo(() => {
-    const segments: Array<{ id: number; color: string; rarity: string; angle: number }> = [];
+    const newSegments: Array<{ id: number; color: string; rarity: string; angle: number }> = [];
     let segmentId = 1;
     
     // Create all segments first
@@ -40,7 +41,7 @@ const RouletteWheel: React.FC = () => {
       const segmentWidth = config.segments;
       
       for (let i = 0; i < segmentWidth; i++) {
-        segments.push({
+        newSegments.push({
           id: segmentId++,
           color: config.color,
           rarity,
@@ -50,12 +51,12 @@ const RouletteWheel: React.FC = () => {
     });
     
     // Shuffle the segments randomly using Fisher-Yates algorithm
-    for (let i = segments.length - 1; i > 0; i--) {
+    for (let i = newSegments.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [segments[i], segments[j]] = [segments[j], segments[i]];
+      [newSegments[i], newSegments[j]] = [newSegments[j], newSegments[i]];
     }
     
-    return segments;
+    return newSegments;
   }, []); // Empty dependency array means this only runs once
 
   const getRandomResult = (): RoulettePart => {
