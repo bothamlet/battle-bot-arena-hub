@@ -30,11 +30,12 @@ const RouletteWheel: React.FC = () => {
     legendary: { color: "bg-orange-500", segments: 1, probability: 1 } // 1%
   };
 
-  // Create segments based on rarity distribution
+  // Create segments based on rarity distribution and shuffle them randomly
   const createSegments = () => {
     const segments: Array<{ id: number; color: string; rarity: string; angle: number }> = [];
     let segmentId = 1;
     
+    // Create all segments first
     Object.entries(rarityConfig).forEach(([rarity, config]) => {
       const segmentAngle = 360 / 41; // Total 41 segments
       const segmentWidth = config.segments;
@@ -48,6 +49,12 @@ const RouletteWheel: React.FC = () => {
         });
       }
     });
+    
+    // Shuffle the segments randomly using Fisher-Yates algorithm
+    for (let i = segments.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [segments[i], segments[j]] = [segments[j], segments[i]];
+    }
     
     return segments;
   };
