@@ -19,25 +19,26 @@ const RouletteWheel: React.FC = () => {
   const [showWinAnnouncement, setShowWinAnnouncement] = useState(false);
   const [rotationAngle, setRotationAngle] = useState(0);
   const [isSlowingDown, setIsSlowingDown] = useState(false);
+  const [shuffleKey, setShuffleKey] = useState(0); // Add shuffle key to trigger reshuffling
   const controls = useAnimation();
 
-  // Define rarity colors and segment distribution
+  // Define rarity colors and segment distribution - reduced segments for better performance
   const rarityConfig = {
-    common: { color: "bg-gray-600", segments: 24, probability: 60 }, // 60%
-    uncommon: { color: "bg-green-600", segments: 10, probability: 25 }, // 25%
-    rare: { color: "bg-blue-600", segments: 4, probability: 10 }, // 10%
-    epic: { color: "bg-purple-600", segments: 2, probability: 4 }, // 4%
+    common: { color: "bg-gray-600", segments: 12, probability: 60 }, // 60%
+    uncommon: { color: "bg-green-600", segments: 5, probability: 25 }, // 25%
+    rare: { color: "bg-blue-600", segments: 2, probability: 10 }, // 10%
+    epic: { color: "bg-purple-600", segments: 1, probability: 4 }, // 4%
     legendary: { color: "bg-orange-500", segments: 1, probability: 1 } // 1%
   };
 
-  // Create segments based on rarity distribution and shuffle them randomly - memoized to prevent re-creation
+  // Create segments based on rarity distribution and shuffle them randomly - now includes shuffleKey
   const segments = useMemo(() => {
     const newSegments: Array<{ id: number; color: string; rarity: string; angle: number }> = [];
     let segmentId = 1;
     
     // Create all segments first
     Object.entries(rarityConfig).forEach(([rarity, config]) => {
-      const segmentAngle = 360 / 41; // Total 41 segments
+      const segmentAngle = 360 / 21; // Total 21 segments (reduced from 41)
       const segmentWidth = config.segments;
       
       for (let i = 0; i < segmentWidth; i++) {
@@ -57,7 +58,7 @@ const RouletteWheel: React.FC = () => {
     }
     
     return newSegments;
-  }, []); // Empty dependency array means this only runs once
+  }, [shuffleKey]); // Now depends on shuffleKey to allow reshuffling
 
   const getRandomResult = (): RoulettePart => {
     const rand = Math.random() * 100;
@@ -89,6 +90,9 @@ const RouletteWheel: React.FC = () => {
     setShowFireworks(false);
     setShowWinAnnouncement(false);
     setIsSlowingDown(false);
+    
+    // Trigger reshuffle before spinning
+    setShuffleKey(prev => prev + 1);
     
     const randomResult = getRandomResult();
     const extraRotations = 10;
@@ -187,7 +191,7 @@ const RouletteWheel: React.FC = () => {
               const angle = (index * 360) / segments.length;
               return (
                 <div
-                  key={segment.id}
+                  key={`${shuffleKey}-${segment.id}`} // Add shuffleKey to force re-render
                   className={`absolute w-full h-full ${segment.color} transition-all duration-300 ${
                     isSlowingDown ? 'brightness-110' : ''
                   }`}
