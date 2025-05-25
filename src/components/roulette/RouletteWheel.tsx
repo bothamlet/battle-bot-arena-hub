@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
@@ -19,7 +18,7 @@ const RouletteWheel: React.FC = () => {
   const [showWinAnnouncement, setShowWinAnnouncement] = useState(false);
   const [rotationAngle, setRotationAngle] = useState(0);
   const [isSlowingDown, setIsSlowingDown] = useState(false);
-  const [shuffleKey, setShuffleKey] = useState(0); // Add shuffle key to trigger reshuffling
+  const [shuffleKey, setShuffleKey] = useState(0);
   const controls = useAnimation();
 
   // Define rarity colors and segment distribution - reduced segments for better performance
@@ -58,9 +57,9 @@ const RouletteWheel: React.FC = () => {
     }
     
     return newSegments;
-  }, [shuffleKey]); // Now depends on shuffleKey to allow reshuffling
+  }, [shuffleKey]);
 
-  const getRandomResult = (): RoulettePart => {
+  const getRandomResult = (): { rarity: string; part: RoulettePart } => {
     const rand = Math.random() * 100;
     let selectedRarity: string;
     
@@ -78,7 +77,9 @@ const RouletteWheel: React.FC = () => {
 
     // Get a random part from the selected rarity
     const partsOfRarity = robotParts.filter(part => part.rarity === selectedRarity);
-    return partsOfRarity[Math.floor(Math.random() * partsOfRarity.length)];
+    const selectedPart = partsOfRarity[Math.floor(Math.random() * partsOfRarity.length)];
+    
+    return { rarity: selectedRarity, part: selectedPart };
   };
 
   const spinWheel = async () => {
@@ -94,58 +95,63 @@ const RouletteWheel: React.FC = () => {
     // Trigger reshuffle before spinning
     setShuffleKey(prev => prev + 1);
     
-    const randomResult = getRandomResult();
+    const { rarity: selectedRarity, part: selectedPart } = getRandomResult();
     const extraRotations = 10;
     const segmentAngle = 360 / segments.length;
     
-    // Find segments matching the result rarity
-    const matchingSegments = segments
-      .map((segment, index) => ({ segment, index }))
-      .filter(({ segment }) => segment.rarity === randomResult.rarity);
-    
-    // Pick a random matching segment
-    const selectedSegment = matchingSegments[Math.floor(Math.random() * matchingSegments.length)];
-    const resultAngle = selectedSegment.index * segmentAngle;
-    
-    const newRotationAngle = rotationAngle + (extraRotations * 360) + resultAngle + (Math.random() * (segmentAngle * 0.8));
-    setRotationAngle(newRotationAngle);
-    
-    const totalDuration = 8;
-    const slowdownTrigger = totalDuration * 0.6;
-    
+    // Wait for segments to be reshuffled, then find segments matching the result rarity
     setTimeout(() => {
-      setIsSlowingDown(true);
-    }, slowdownTrigger * 1000);
-    
-    await controls.start({
-      rotate: newRotationAngle,
-      transition: { 
-        duration: totalDuration,
-        ease: [0.25, 0.05, 0.15, 1],
-      }
-    });
-    
-    setResult(randomResult);
-    setIsSpinning(false);
-    setIsSlowingDown(false);
-    
-    setShowWinAnnouncement(true);
-    
-    setTimeout(() => {
-      setShowFireworks(true);
-    }, 500);
-    
-    const isRare = randomResult.rarity === "epic" || randomResult.rarity === "legendary";
-    if (isRare) {
+      const matchingSegments = segments
+        .map((segment, index) => ({ segment, index }))
+        .filter(({ segment }) => segment.rarity === selectedRarity);
+      
+      // Pick a random matching segment to ensure the wheel lands on the correct rarity
+      const selectedSegment = matchingSegments[Math.floor(Math.random() * matchingSegments.length)];
+      const resultAngle = selectedSegment.index * segmentAngle;
+      
+      // Calculate rotation to land on the selected segment
+      // The pointer is at the top (0 degrees), so we need to account for that
+      const targetAngle = 360 - resultAngle + (Math.random() * (segmentAngle * 0.8) - segmentAngle * 0.4);
+      const newRotationAngle = rotationAngle + (extraRotations * 360) + targetAngle;
+      setRotationAngle(newRotationAngle);
+      
+      const totalDuration = 8;
+      const slowdownTrigger = totalDuration * 0.6;
+      
       setTimeout(() => {
-        setShowCelebration(true);
-      }, 800);
-    }
+        setIsSlowingDown(true);
+      }, slowdownTrigger * 1000);
+      
+      controls.start({
+        rotate: newRotationAngle,
+        transition: { 
+          duration: totalDuration,
+          ease: [0.25, 0.05, 0.15, 1],
+        }
+      }).then(() => {
+        setResult(selectedPart);
+        setIsSpinning(false);
+        setIsSlowingDown(false);
+        
+        setShowWinAnnouncement(true);
+        
+        setTimeout(() => {
+          setShowFireworks(true);
+        }, 500);
+        
+        const isRare = selectedPart.rarity === "epic" || selectedPart.rarity === "legendary";
+        if (isRare) {
+          setTimeout(() => {
+            setShowCelebration(true);
+          }, 800);
+        }
 
-    setTimeout(() => {
-      setShowFireworks(false);
-      setShowWinAnnouncement(false);
-    }, 8000);
+        setTimeout(() => {
+          setShowFireworks(false);
+          setShowWinAnnouncement(false);
+        }, 8000);
+      });
+    }, 100); // Small delay to ensure segments have been reshuffled
   };
 
   const isRare = result && (result.rarity === "epic" || result.rarity === "legendary");
@@ -191,7 +197,7 @@ const RouletteWheel: React.FC = () => {
               const angle = (index * 360) / segments.length;
               return (
                 <div
-                  key={`${shuffleKey}-${segment.id}`} // Add shuffleKey to force re-render
+                  key={`${shuffleKey}-${segment.id}`}
                   className={`absolute w-full h-full ${segment.color} transition-all duration-300 ${
                     isSlowingDown ? 'brightness-110' : ''
                   }`}
