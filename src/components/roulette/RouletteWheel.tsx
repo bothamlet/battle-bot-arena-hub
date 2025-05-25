@@ -1,5 +1,4 @@
-
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
 import { motion, useAnimation } from "framer-motion";
@@ -30,8 +29,8 @@ const RouletteWheel: React.FC = () => {
     legendary: { color: "bg-orange-500", segments: 1, probability: 1 } // 1%
   };
 
-  // Create segments based on rarity distribution and shuffle them randomly
-  const createSegments = () => {
+  // Create segments based on rarity distribution and shuffle them randomly - memoized to prevent re-creation
+  const segments = useMemo(() => {
     const segments: Array<{ id: number; color: string; rarity: string; angle: number }> = [];
     let segmentId = 1;
     
@@ -57,9 +56,7 @@ const RouletteWheel: React.FC = () => {
     }
     
     return segments;
-  };
-
-  const segments = createSegments();
+  }, []); // Empty dependency array means this only runs once
 
   const getRandomResult = (): RoulettePart => {
     const rand = Math.random() * 100;
