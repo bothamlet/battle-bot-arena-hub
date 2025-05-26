@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
@@ -10,6 +9,14 @@ import ConfettiEffect from "./effects/ConfettiEffect";
 import SparkleEffect from "./effects/SparkleEffect";
 import FireworksEffect from "./effects/FireworksEffect";
 import WinAnnouncement from "./effects/WinAnnouncement";
+
+interface WheelSegment {
+  id: number;
+  color: string;
+  rarity: string;
+  angle: number;
+  part: RoulettePart;
+}
 
 const RouletteWheel: React.FC = () => {
   const [isSpinning, setIsSpinning] = useState(false);
@@ -31,20 +38,25 @@ const RouletteWheel: React.FC = () => {
     legendary: { color: "bg-orange-500", segments: 1, probability: 1 }
   };
 
-  // Create segments based on rarity distribution and shuffle them
+  // Create segments with actual parts assigned to each segment
   const segments = useMemo(() => {
-    const newSegments: Array<{ id: number; color: string; rarity: string; angle: number }> = [];
+    const newSegments: WheelSegment[] = [];
     let segmentId = 1;
+    const segmentAngle = 360 / 21;
     
+    // Create segments for each rarity with actual parts
     Object.entries(rarityConfig).forEach(([rarity, config]) => {
-      const segmentAngle = 360 / 21;
+      const partsOfRarity = robotParts.filter(part => part.rarity === rarity);
       
       for (let i = 0; i < config.segments; i++) {
+        // Assign a random part of this rarity to each segment
+        const randomPart = partsOfRarity[Math.floor(Math.random() * partsOfRarity.length)];
         newSegments.push({
           id: segmentId++,
           color: config.color,
           rarity,
-          angle: segmentAngle
+          angle: segmentAngle,
+          part: randomPart
         });
       }
     });
@@ -55,34 +67,10 @@ const RouletteWheel: React.FC = () => {
       [newSegments[i], newSegments[j]] = [newSegments[j], newSegments[i]];
     }
     
+    console.log('Segments created:', newSegments.map((s, i) => `${i}: ${s.rarity} - ${s.part.name}`));
+    
     return newSegments;
   }, [shuffleKey]);
-
-  // Fixed probability-based result selection
-  const getRandomResult = (): { rarity: string; part: RoulettePart } => {
-    const rand = Math.random() * 100;
-    let selectedRarity: string;
-    
-    // Use exact probabilities that match the segment distribution
-    if (rand < 1) {
-      selectedRarity = "legendary";
-    } else if (rand < 5) {
-      selectedRarity = "epic";
-    } else if (rand < 15) {
-      selectedRarity = "rare";
-    } else if (rand < 40) {
-      selectedRarity = "uncommon";
-    } else {
-      selectedRarity = "common";
-    }
-
-    const partsOfRarity = robotParts.filter(part => part.rarity === selectedRarity);
-    const selectedPart = partsOfRarity[Math.floor(Math.random() * partsOfRarity.length)];
-    
-    console.log(`Selected rarity: ${selectedRarity}, Selected part: ${selectedPart.name} (${selectedPart.rarity})`);
-    
-    return { rarity: selectedRarity, part: selectedPart };
-  };
 
   const spinWheel = async () => {
     if (isSpinning) return;
@@ -97,40 +85,30 @@ const RouletteWheel: React.FC = () => {
     // Reshuffle segments before each spin
     setShuffleKey(prev => prev + 1);
     
-    // Get the result first
-    const { rarity: selectedRarity, part: selectedPart } = getRandomResult();
-    console.log(`Spin result: ${selectedPart.name} (${selectedPart.rarity})`);
-    
     const extraRotations = 10;
     const segmentAngle = 360 / segments.length;
     
     // Small delay to ensure segments are reshuffled
     setTimeout(() => {
-      // Find all segments that match the selected rarity
-      const matchingSegments = segments
-        .map((segment, index) => ({ segment, index }))
-        .filter(({ segment }) => segment.rarity === selectedRarity);
+      // Pick a random segment directly
+      const randomSegmentIndex = Math.floor(Math.random() * segments.length);
+      const selectedSegment = segments[randomSegmentIndex];
+      const selectedPart = selectedSegment.part;
       
-      console.log(`Found ${matchingSegments.length} matching segments for rarity: ${selectedRarity}`);
-      
-      if (matchingSegments.length === 0) {
-        console.error(`No segments found for rarity: ${selectedRarity}`);
-        setIsSpinning(false);
-        return;
-      }
-      
-      // Pick a random matching segment
-      const selectedSegment = matchingSegments[Math.floor(Math.random() * matchingSegments.length)];
-      const resultAngle = selectedSegment.index * segmentAngle;
-      
-      console.log(`Selected segment index: ${selectedSegment.index}, angle: ${resultAngle}`);
+      console.log(`Random segment selected: index ${randomSegmentIndex}`);
+      console.log(`Selected segment: ${selectedSegment.rarity} - ${selectedPart.name}`);
       
       // Calculate rotation to land on the selected segment
       // The pointer is at the top (0 degrees), we want to land in the center of the segment
-      const segmentCenter = resultAngle + (segmentAngle / 2);
+      const segmentStartAngle = randomSegmentIndex * segmentAngle;
+      const segmentCenter = segmentStartAngle + (segmentAngle / 2);
+      
+      // We need to rotate so that the segment center aligns with the pointer (top)
+      // Since we're rotating clockwise, we need to account for the direction
       const targetAngle = 360 - segmentCenter + (Math.random() * (segmentAngle * 0.3) - segmentAngle * 0.15);
       const newRotationAngle = rotationAngle + (extraRotations * 360) + targetAngle;
       
+      console.log(`Segment start angle: ${segmentStartAngle}, center: ${segmentCenter}`);
       console.log(`Target angle: ${targetAngle}, Final rotation: ${newRotationAngle}`);
       
       setRotationAngle(newRotationAngle);
